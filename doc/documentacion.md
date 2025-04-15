@@ -89,6 +89,7 @@ establecidos.
 ## 4. Historias de usuario
 
 ## 5. Diagrama de Casos de uso
+![Diagrama de Casos de uso](diagramas/diagrama_casos_de_uso.drawio.png)
 
 ## 6. Implementación de conversaciones
 
