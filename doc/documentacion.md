@@ -53,3 +53,57 @@ compuesto por desarrolladores, diseñadores, testers y otros especialistas
 necesarios para el proyecto. Es responsable de transformar el Product Backlog
 en incrementos funcionales del producto durante cada sprint.
 
+![Scrum](img/image.png)
+
+## 2. Planificación de Actividades
+Una vez definidos los miembros del proyecto "CeluStore", se llevó a cabo una reunión
+inicial de planificación (Sprint Planning) en la que se obtuvieron los requerimientos del
+proyecto y se determinó la composición de la Pila del Producto (Product Backlog). En
+la reunión estuvieron presentes el Scrum Master, el Product Owner, los
+desarrolladores. Se analizaron las funcionalidades del proyecto y se priorizaron las que
+se desarrollarían en el primer sprint. Además se determinó que la duración total del
+sprint es de 4 semanas.
+
+## 3. Plan de Riesgos
+En la gestión de riesgos de un proyecto de desarrollo, es crucial identificar, evaluar y
+mitigar posibles riesgos que puedan afectar el desarrollo, implementación o
+mantenimiento del software. Esta parte del informe se enfoca en anticipar y planificar
+para situaciones que podrían impactar negativamente en el proyecto. Al identificar
+riesgos potenciales, se pueden implementar estrategias para minimizar su impacto o
+evitarlos por completo. La gestión de riesgos en un informe ayuda a garantizar que el
+proyecto se complete de manera exitosa y dentro de los plazos y presupuestos
+establecidos.
+
+#### Identificación
+![Identificación](img/image-2.png)
+
+#### Sub-Clasificación
+![Sub-Clasificación](img/image-1.png)
+
+#### Análisis 
+![Análisis](img/image-5.png)
+
+### Planificación de estrategias
+![Planificación de estrategias](img/image-4.png)
+
+## 4. Historias de usuario
+
+## 5. Diagrama de Casos de uso
+
+## 6. Implementación de conversaciones
+
+## 7. Diagrama de secuencia
+
+## 8. Contrato de operaciones críticas
+
+## 9. Diagrama de Entidad Relación del sistema
+![DER](img/der.png)
+
+## 10. Arquitectura utilizada
+
+## 11. Herramientas utilizadas
+
+## 12. Bibliografía 
+
+
+
