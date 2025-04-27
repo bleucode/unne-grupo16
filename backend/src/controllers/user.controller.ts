@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { userService } from '../services/user.service';
 import { userValidator } from '../validators/user.validator';
-import { userRepository } from '../repositories/user.repository';
+//import { userRepository } from '../repositories/user.repository';
 
 export const userController = {
   register: async (req: Request, res: Response) => {
@@ -27,7 +27,7 @@ export const userController = {
          return
       }
 
-      const user = await userRepository.getUserById(id);
+      const user = await userService.getUserById(id);
       if (!user) {
          res.status(404).json({ error: 'Usuario no encontrado' });
          return
