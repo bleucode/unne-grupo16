@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Localidad {
+  id_localidad Int      @id @default(autoincrement())
+  nombre       String
+  id_provincia Int
+  provincia    Provincia @relation(fields: [id_provincia], references: [id_provincia])
+  Direcciones  Direccion[]
+}
+
+model Provincia {
+  id_provincia Int        @id @default(autoincrement())
+  nombre       String
+  localidades  Localidad[]
+}
+
+model Direccion {
+  id_direccion Int       @id @default(autoincrement())
+  calle        String
+  nro_calle    String
+  cod_postal   String
+  id_localidad Int
+  localidad    Localidad @relation(fields: [id_localidad], references: [id_localidad])
+  usuarios     Usuario[]
+  envios       Envio[]
+  retiros      Retiro[]
+}
+
+model Retiro {
+  id_retiro     Int       @id @default(autoincrement())
+  fecha_retiro  DateTime
+  estado_retiro String
+  id_venta      Int
+  id_direccion  Int
+  venta         Venta     @relation(fields: [id_venta], references: [id_venta])
+  direccion     Direccion @relation(fields: [id_direccion], references: [id_direccion])
+}
+
+model Envio {
+  id_envio       Int       @id @default(autoincrement())
+  fecha_envio    DateTime
+  estado_envio   String
+  cod_seguimiento String
+  id_venta       Int
+  id_direccion   Int
+  venta          Venta     @relation(fields: [id_venta], references: [id_venta])
+  direccion      Direccion @relation(fields: [id_direccion], references: [id_direccion])
+}
+
+model VentaDetalle {
+  id_venta_detalle Int    @id @default(autoincrement())
+  cantidad         Int
+  precio           Float
+  id_venta         Int
+  id_producto      Int
+  venta            Venta     @relation(fields: [id_venta], references: [id_venta])
+  producto         Producto  @relation(fields: [id_producto], references: [id_producto])
+}
+
+model Venta {
+  id_venta      Int            @id @default(autoincrement())
+  fecha_venta   DateTime
+  total_venta   Float
+  id_cliente    Int
+  id_tipo_pago  Int
+  usuario       Usuario        @relation(fields: [id_cliente], references: [id_usuario])
+  ventaDetalles VentaDetalle[]
+  envios        Envio[]
+  retiros       Retiro[]
+}
+
+model Usuario {
+  id_usuario     Int       @id @default(autoincrement())
+  nombre         String
+  apellido       String
+  dni            String
+  email          String    @unique
+  nro_celular    String
+  id_direccion   Int
+  id_rol         Int
+  password       String
+  fecha_registro DateTime
+  estado         Boolean
+  direccion      Direccion @relation(fields: [id_direccion], references: [id_direccion])
+  rol            Rol       @relation(fields: [id_rol], references: [id_rol])
+  ventas         Venta[]
+}
+
+model Rol {
+  id_rol    Int       @id @default(autoincrement())
+  nombre_rol String
+  usuarios  Usuario[]
+}
+
+model Producto {
+  id_producto    Int       @id @default(autoincrement())
+  nombre         String
+  descripcion    String
+  especificacion String
+  precio         Float
+  stock          Int
+  imagen         String
+  estado         Boolean
+  id_modelo      Int
+  id_categoria   Int
+  modelo         Modelo    @relation(fields: [id_modelo], references: [id_modelo])
+  categoria      Categoria @relation(fields: [id_categoria], references: [id_categoria])
+  ventaDetalles  VentaDetalle[]
+}
+
+model Marca {
+  id_marca    Int      @id @default(autoincrement())
+  descripcion String
+  modelos     Modelo[]
+}
+
+model Modelo {
+  id_modelo    Int      @id @default(autoincrement())
+  descripcion  String
+  id_marca     Int
+  marca        Marca    @relation(fields: [id_marca], references: [id_marca])
+  productos    Producto[]
+}
+
+model Categoria {
+  id_categoria Int      @id @default(autoincrement())
+  nombre       String
+  productos    Producto[]
+}
