@@ -58,4 +58,13 @@ export const userController = {
     await userService.deleteUser(id);
     res.json({ message: 'User deleted successfully' });
   },
+  async activate(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id);
+      const user = await userService.activateUser(id);
+      res.json({ message: 'Usuario activado exitosamente', user });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al activar usuario', error });
+    }
+  },
 };

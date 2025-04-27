@@ -46,9 +46,16 @@ export const userService = {
   async deleteUser(id: number) {
     return await prisma.usuario.update({
       where: { id_usuario: id },
-      data: { estado: false }, // o estado: 0, depende si tu campo es booleano o numérico
+      data: { estado: false },
+    });
+  },
+  async activateUser(id: number) {
+    return await prisma.usuario.update({
+      where: { id_usuario: id },
+      data: { estado: true }, 
     });
   }
+  
   
 };
 
