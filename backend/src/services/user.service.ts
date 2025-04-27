@@ -38,11 +38,18 @@ export const userService = {
     });
   },
 
+  // async deleteUser(id: number) {
+  //   return await prisma.usuario.delete({
+  //     where: { id_usuario: id },
+  //   });
+  // },
   async deleteUser(id: number) {
-    return await prisma.usuario.delete({
+    return await prisma.usuario.update({
       where: { id_usuario: id },
+      data: { estado: false }, // o estado: 0, depende si tu campo es booleano o numérico
     });
-  },
+  }
+  
 };
 
 // import { userRepository } from '../repositories/user.repository';

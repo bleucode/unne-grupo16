@@ -87,7 +87,7 @@ model Usuario {
   id_rol         Int
   password       String
   fecha_registro DateTime
-  estado         Boolean
+  estado         Boolean @default(true)
   direccion      Direccion @relation(fields: [id_direccion], references: [id_direccion])
   rol            Rol       @relation(fields: [id_rol], references: [id_rol])
   ventas         Venta[]
