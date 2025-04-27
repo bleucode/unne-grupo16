@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"dni\": \"12345678\",\n  \"email\": \"juan@example.com\",\n  \"nro_celular\": \"1234567890\",\n  \"id_direccion\": 1,\n  \"id_rol\": 2, \n  \"password\": \"123456\",\n  \"fecha_registro\": \"2025-04-27T00:00:00Z\",\n  \"estado\": true\n}\n",
+					"raw": "{\n  \"nombre\": \"julian\",\n  \"apellido\": \"mierez\",\n  \"dni\": \"42550222\",\n  \"email\": \"josuuue@example.com\",\n  \"nro_celular\": \"1234567890\",\n  \"id_direccion\": 1,\n  \"id_rol\": 1, \n  \"password\": \"123456\",\n  \"fecha_registro\": \"2025-04-27T00:00:00Z\",\n  \"estado\": true\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -44,7 +44,12 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"123456\"\n}"
+					"raw": "{\n  \"email\": \"jose@example.com\",\n  \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "http://localhost:3000/api/auth/login",
@@ -65,6 +70,16 @@
 		{
 			"name": "User - Get All (Admin Only)",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo2LCJlbWFpbCI6Imp1bGlhbkBleGFtcGxlLmNvbSIsIm5vbWJyZSI6Imp1bGlhbiIsImlkX3JvbCI6MSwiaWF0IjoxNzQ1Nzg2MTk0LCJleHAiOjE3NDYzOTA5OTR9.TO1ePd1F0pgwb78jJdDIaJXYlapx62wdZ1A05B89nEY",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -74,7 +89,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:3000/api/users/allusers",
+					"raw": "http://localhost:3000/api/user/allusers",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -82,7 +97,7 @@
 					"port": "3000",
 					"path": [
 						"api",
-						"users",
+						"user",
 						"allusers"
 					]
 				}
@@ -95,7 +110,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/api/users/1",
+					"raw": "http://localhost:3000/api/user/6",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -103,8 +118,8 @@
 					"port": "3000",
 					"path": [
 						"api",
-						"users",
-						"1"
+						"user",
+						"6"
 					]
 				}
 			},
@@ -117,10 +132,15 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"nombre\": \"Juan Carlos\",\n  \"apellido\": \"Pérez Gomez\"\n}"
+					"raw": "{\n  \"nombre\": \"Juan Carlos\",\n  \"apellido\": \"Pérez Gomez\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/api/users/1",
+					"raw": "http://localhost:3000/api/user/6",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -128,8 +148,8 @@
 					"port": "3000",
 					"path": [
 						"api",
-						"users",
-						"1"
+						"user",
+						"6"
 					]
 				}
 			},
@@ -141,7 +161,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/api/users/1",
+					"raw": "http://localhost:3000/api/user/6",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -149,8 +169,8 @@
 					"port": "3000",
 					"path": [
 						"api",
-						"users",
-						"1"
+						"user",
+						"6"
 					]
 				}
 			},
