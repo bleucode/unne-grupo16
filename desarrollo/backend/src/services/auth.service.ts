@@ -1,7 +1,8 @@
-import { userService } from '../services/user.service';
+import { userService } from './user.service';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { jwtConfig } from '../config/jwt';
+import { isEmail } from 'validator';
 
 export const authService = {
   register: async (userData: any) => {
@@ -20,9 +21,14 @@ export const authService = {
     const user = await userService.getUserByEmail(email);
     if (!user) throw new Error('Email no encontrado');
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log("Contraseña ingresada:", password);  // Verifica la contraseña ingresada
+    console.log("Contraseña guardada (hash):", user.password);  // Verifica el hash almacenado
+
+    const passwordMatch = await bcrypt.compare(password, user.password); // Compara directamente las contraseñas sin hash
+    console.log("¿Contraseña coincide?", passwordMatch);  // Verifica el resultado de la comparación
+
     if (!passwordMatch) throw new Error('Contraseña incorrecta');
-    console.log("JWT_SECRET:", jwtConfig.secret);
+
     const token = jwt.sign(
       {
         id_usuario: user.id_usuario,

@@ -48,3 +48,26 @@
 .registro-form button:hover {
     background-color: #b91c1c; /* Rojo más oscuro en hover */
 }
+
+/* Estilos para el select */
+.custom-select {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+  }
+  
+  .custom-select:focus {
+    border-color: #007bff;
+    background-color: #fff;
+    outline: none;
+  }
+  
+  .custom-select option {
+    padding: 10px;
+    font-size: 16px;
+  }
+  

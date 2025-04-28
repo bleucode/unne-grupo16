@@ -7,11 +7,16 @@ export const userValidator = {
     dni: z.string(),
     email: z.string().email(),
     nro_celular: z.string(),
-    id_direccion: z.number(),
+    direccion: z.object({
+      calle: z.string(),
+      nro_calle: z.string(),
+      cod_postal: z.string(),
+      nombre_localidad: z.string(),  
+    }).optional(),
     id_rol: z.number(),
     password: z.string().min(6),
-    fecha_registro: z.date().or(z.string().transform(str => new Date(str))),
-    estado: z.boolean(),
+    fecha_registro: z.date().or(z.string().transform(str => new Date(str))).optional(), // Hacer fecha_registro opcional
+    estado: z.boolean().optional(), // Hacer estado opcional
   }),
   update: z.object({
     nombre: z.string().optional(),

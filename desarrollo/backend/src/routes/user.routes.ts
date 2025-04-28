@@ -13,6 +13,7 @@ userRouter.get(
     userController.getAll
   );
 userRouter.get('/:id', userController.getById);
+userRouter.get('/address/:id', userController.getAddressById);
 userRouter.put('/:id', userController.update);
 userRouter.delete('/:id', userController.delete);
 
