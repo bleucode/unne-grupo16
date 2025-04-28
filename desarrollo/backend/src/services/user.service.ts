@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
-process.env.DATABASE_URL = "mysql://celustore:azulmaia123!@localhost:3306/celustore_db";
+
 
 export const userService = {
   // Función para crear o buscar localidad por nombre
