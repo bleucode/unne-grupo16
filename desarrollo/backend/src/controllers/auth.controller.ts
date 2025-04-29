@@ -2,6 +2,8 @@ import { RequestHandler } from 'express';
 import { authService } from '../services/auth.service';
 import { userValidator } from '../validators/user.validator';
 
+// En este controlador se manejan las peticiones de registro y login de los usuarios
+
 export const register: RequestHandler = async (req, res, next) => {
   try {
     const data = userValidator.register.parse(req.body);

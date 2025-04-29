@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { userService } from '../services/user.service';
 import { userValidator } from '../validators/user.validator';
 
+// En este controlador se manejan las peticiones de los usuarios
+// y se comunican con el servicio de usuarios para realizar las operaciones necesarias
+
 export const userController = {
   register: async (req: Request, res: Response) => {
     try {
@@ -45,11 +48,8 @@ export const userController = {
     try {
       const id = parseInt(req.params.id);
       const data = userValidator.update.parse(req.body);
-      console.log('Datos recibidos en el backend:', req.body);
-      console.log('Datos recibidos:', data);
       const updatedUser = await userService.updateUser(id, data);
       res.json(updatedUser);
-      console.log('Usuario actualizado:', updatedUser);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
@@ -84,7 +84,7 @@ export const userController = {
          return;
       }
 
-      res.json(user); // ✅ Devuelve la respuesta correctamente
+      res.json(user); 
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Error interno del servidor' });

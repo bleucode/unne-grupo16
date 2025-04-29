@@ -4,6 +4,9 @@ import { console } from 'inspector';
 
 const prisma = new PrismaClient();
 
+// En este servicio se manejan las operaciones relacionadas con los usuarios
+// como la creación, actualización y eliminación de usuarios
+// y la creación de direcciones y localidades
 
 export const userService = {
   // Función para crear o buscar localidad por nombre
@@ -29,8 +32,6 @@ export const userService = {
           id_provincia: provincia.id_provincia,
         },
       });
-
-      console.log('Localidad creada:', nuevaLocalidad);
       return nuevaLocalidad;
     }
 
@@ -52,8 +53,6 @@ export const userService = {
       },
     });
 
-    console.log('Dirección creada:', newDireccion);
-
     if (!newDireccion.id_direccion) {
       throw new Error('La dirección no se creó correctamente');
     }
@@ -62,6 +61,7 @@ export const userService = {
   },
 
   // Función para registrar al usuario
+  // En nuestro diagrama de secuencia: Registrar_usuario()
   async registerUser(userData: any) {
     console.log("Datos del usuario:", userData);
     console.log("Password antes de hashear:", userData.password);  // Verifica la contraseña antes de hashearla
@@ -71,7 +71,6 @@ export const userService = {
 
     const hashedPassword = userData.password;
     console.log("Contraseña hasheada:", hashedPassword);  // Verifica el hash generado
-
 
     const direccion = await this.createDireccion(userData.direccion);
 
@@ -86,7 +85,6 @@ export const userService = {
         data: { nombre_rol: "usuario" },
       });
     }
-
     const newUser = await prisma.usuario.create({
       data: {
         nombre: userData.nombre,
@@ -176,15 +174,8 @@ export const userService = {
     });
   
     return updatedUser;
-  }
-  
-  ,
-  
-  // async deleteUser(id: number) {
-  //   return await prisma.usuario.delete({
-  //     where: { id_usuario: id },
-  //   });
-  // },
+  },
+  // En nuestro diagrama de secuencia: eliminar_usuario()
   async deleteUser(id: number) {
     return await prisma.usuario.update({
       where: { id_usuario: id },

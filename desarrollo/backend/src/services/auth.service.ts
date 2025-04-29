@@ -3,24 +3,31 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { jwtConfig } from '../config/jwt';
 
+// En este servicio se manejan las operaciones de autenticación
+// como el registro y login de los usuarios
 
 export const authService = {
+  // Función para registrar un nuevo usuario
   register: async (userData: any) => {
     const existingUser = await userService.getUserByEmail(userData.email);
     if (existingUser) {
       throw new Error('El email ya está registrado');
     }
-
+    // Hasheamos la contraseña
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = await userService.registerUser({ ...userData, password: hashedPassword });
 
     return user;
   },
 
+  // Función para iniciar sesión, en nuestro diagrama de secuencia Iniciar_sesion() 
+  // Verificamos si el usuario existe y si la contraseña es correcta
   login: async (email: string, password: string) => {
     const user = await userService.getUserByEmail(email);
     if (!user) throw new Error('Email no encontrado');
 
+    // Verificamos si la contraseña es correcta, comparando la contraseña hasheada
+    // almacenada en la base de datos con la contraseña proporcionada
     const passwordMatch = await bcrypt.compare(password, user.password); 
     
     if (!passwordMatch) throw new Error('Contraseña incorrecta');
