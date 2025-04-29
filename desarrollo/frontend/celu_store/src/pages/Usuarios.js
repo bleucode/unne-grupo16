@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Usuarios.css'; // Estilos personalizados
+import './Usuarios.css'; 
 
 function Usuarios() {
   const [users, setUsers] = useState([]);
@@ -42,7 +42,6 @@ function Usuarios() {
           });
           
           const addressData = await addressResponse.json();
-          console.log(addressData)
           return {
             id: user.id_usuario,
             nombre: user.nombre,
@@ -50,8 +49,8 @@ function Usuarios() {
             email: user.email,
             dni: user.dni,
             nro_celular: user.nro_celular,
-            direccion: addressData, // Traemos los datos completos de la dirección
-            role: user.id_rol === 1 ? 'usuario' : 'administrador',
+            direccion: addressData || {}, // Traemos los datos completos de la dirección
+            rol: user.id_rol === 1 ? 'usuario' : 'administrador',
           };
         }));
 
@@ -128,8 +127,8 @@ function Usuarios() {
         console.error('Token no proporcionado');
         return;
       }
-
-      const response = await fetch(`http://localhost:4000/api/user/update/${selectedUser.id}`, {
+  
+      const response = await fetch(`http://localhost:4000/api/user/${selectedUser.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -139,23 +138,38 @@ function Usuarios() {
           nombre: selectedUser.nombre,
           apellido: selectedUser.apellido,
           email: selectedUser.email,
-          id_rol: selectedUser.role === 'administrador' ? 2 : 1,
-          direccion: selectedUser.direccion, // Aquí se incluye la dirección
+          dni: selectedUser.dni,
+          nro_celular: selectedUser.nro_celular,
+          id_rol: selectedUser.rol === 'usuario' ? 1 : 2,
+          direccion: {
+            id_direccion: selectedUser.direccion?.id_direccion,
+            calle: selectedUser.direccion?.calle,
+            nro_calle: selectedUser.direccion?.nro_calle,
+            cod_postal: selectedUser.direccion?.cod_postal,
+            id_localidad: selectedUser.direccion?.id_localidad,
+          },
         }),
       });
+
+
+      const responseData = await response.json();
 
       if (response.ok) {
         setUsers(users.map(u => (u.id === selectedUser.id ? selectedUser : u)));
         setSelectedUser(null);
         setEditMode(false);
+        alert(responseData.message || "Usuario actualizado con éxito");
         console.log('Usuario actualizado');
       } else {
         console.error('Error al actualizar el usuario:', response.statusText);
+        alert(responseData.message || "Hubo un error al actualizar el usuario");
       }
     } catch (error) {
       console.error('Error al actualizar el usuario:', error);
+      alert("Error de conexión. Intenta nuevamente.");
     }
   };
+  
 
   const closeModal = () => {
     setSelectedUser(null);
@@ -192,7 +206,7 @@ function Usuarios() {
               <td>{user.nombre}</td>
               <td>{user.apellido}</td>
               <td>{user.email}</td>
-              <td>{user.role}</td>
+              <td>{user.rol}</td>
               <td>
                 <button onClick={() => handleView(user)}>Ver</button>
                 <button onClick={() => handleEdit(user)}>Modificar</button>
@@ -217,7 +231,7 @@ function Usuarios() {
           </div>
         </div>
       )}
-
+      
       {/* Modal de edición de usuario */}
       {selectedUser && (
         <div className="modal-overlay">
@@ -246,34 +260,71 @@ function Usuarios() {
                 onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
                 disabled={!editMode}
               />
-              <label>Rol:</label>
-              <select
-                value={selectedUser.role}
-                onChange={(e) => setSelectedUser({ ...selectedUser, role: e.target.value })}
-                disabled={!editMode}
-              >
-                <option value="usuario">usuario</option>
-                <option value="administrador">administrador</option>
-              </select>
-
-              {/* Dirección */}
-              <label>Dirección:</label>
+              <label>DNI:</label>
               <input
                 type="text"
-                value={selectedUser.direccion?.calle || ''}
+                value={selectedUser.dni}
+                onChange={(e) => setSelectedUser({ ...selectedUser, dni: e.target.value })}
+                disabled={!editMode}
+                placeholder="DNI"
+              />
+              <label>Nro Celular:</label>
+              <input
+                type="text"
+                value={selectedUser.nro_celular}
+                onChange={(e) => setSelectedUser({ ...selectedUser, nro_celular: e.target.value })}
+                disabled={!editMode}
+                placeholder="Número de celular"
+              />
+              <label>Rol:</label>
+              <select
+                value={selectedUser.rol}
+                onChange={(e) => setSelectedUser({ ...selectedUser, rol: e.target.value })}
+                disabled={!editMode}
+              >
+                <option value="usuario">Usuario</option>
+                <option value="administrador">Administrador</option>
+              </select>
+              <label>Calle:</label>
+              <input
+                type="text"
+                value={selectedUser.direccion.calle}
                 onChange={(e) => setSelectedUser({
                   ...selectedUser,
-                  direccion: { ...selectedUser.direccion, calle: e.target.value }
+                  direccion: { ...selectedUser.direccion, calle: e.target.value },
                 })}
                 disabled={!editMode}
+                placeholder="Calle"
               />
-              {/* Otros campos de dirección según sea necesario */}
-              {/* Guardar botón */}
-              {editMode && <button type="submit" className="save-btn">Guardar</button>}
+              <label>Nro Calle:</label>
+              <input
+                type="text"
+                value={selectedUser.direccion.nro_calle}
+                onChange={(e) => setSelectedUser({
+                  ...selectedUser,
+                  direccion: { ...selectedUser.direccion, nro_calle: e.target.value },
+                })}
+                disabled={!editMode}
+                placeholder="Número"
+              />
+              <label>Cod postal:</label>
+              <input
+                type="text"
+                value={selectedUser.direccion.cod_postal}
+                onChange={(e) => setSelectedUser({
+                  ...selectedUser,
+                  direccion: { ...selectedUser.direccion, cod_postal: e.target.value },
+                })}
+                disabled={!editMode}
+                placeholder="Código Postal"
+              />
+              {editMode && <button className="modal-btn confirm" type="submit">Guardar cambios</button>}
             </form>
+            <button className="modal-btn cancel" onClick={closeModal}>Cerrar</button>
           </div>
         </div>
       )}
+
     </div>
   );
 }

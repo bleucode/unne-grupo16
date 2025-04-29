@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './Registro.css';
+import { useNavigate } from 'react-router-dom';
+
+
 
 function Registro() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -86,6 +90,7 @@ function Registro() {
 
       if (response.ok) {
         alert('¡Usuario registrado exitosamente!');
+        navigate('/login');
       } else {
         alert('Hubo un error al registrar el usuario.');
       }

@@ -1,5 +1,4 @@
 import { z } from 'zod';
-
 export const userValidator = {
   register: z.object({
     nombre: z.string(),
@@ -11,7 +10,7 @@ export const userValidator = {
       calle: z.string(),
       nro_calle: z.string(),
       cod_postal: z.string(),
-      nombre_localidad: z.string(),  
+      nombre_localidad: z.string(),
     }).optional(),
     id_rol: z.number(),
     password: z.string().min(6),
@@ -24,7 +23,13 @@ export const userValidator = {
     dni: z.string().optional(),
     email: z.string().email().optional(),
     nro_celular: z.string().optional(),
-    id_direccion: z.number().optional(),
+    direccion: z.object({
+      id_direccion: z.number().optional(),
+      calle: z.string().optional(),
+      nro_calle: z.string().optional(),
+      cod_postal: z.string().optional(),
+      id_localidad: z.number().optional(),
+    }).optional(),
     id_rol: z.number().optional(),
     password: z.string().min(6).optional(),
     estado: z.boolean().optional(),

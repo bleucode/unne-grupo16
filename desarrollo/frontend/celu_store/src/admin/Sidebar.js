@@ -1,5 +1,5 @@
 import React from 'react';
-import './AdminPanel.css'; // o Sidebar.css si lo dividís
+import './AdminPanel.css'; 
 
 function Sidebar({ visible, onSelect, selected }) {
   return (

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { console } from 'inspector';
 
 const prisma = new PrismaClient();
 
@@ -122,16 +123,63 @@ export const userService = {
   },
 
   async updateUser(id: number, userData: any) {
+    console.log("Datos del usuario a actualizar:", userData);
+  
+    // Verificar si el rol "administrador" existe
+    const adminRole = await prisma.rol.findUnique({
+      where: { id_rol: 2 },
+    });
+  
+    if (!adminRole) {
+      await prisma.rol.create({
+        data: {
+          id_rol: 2,
+          nombre_rol: 'administrador',
+        },
+      });
+      console.log('Rol de administrador creado');
+    }
+  
+    // Si hay nueva contraseña, la encriptamos
     if (userData.password) {
       userData.password = await bcrypt.hash(userData.password, 10);
     }
+  
+    // Primero actualizamos la dirección si viene en userData
+    if (userData.direccion && userData.direccion.id_direccion) {
+      await prisma.direccion.update({
+        where: { id_direccion: userData.direccion.id_direccion },
+        data: {
+          calle: userData.direccion.calle,
+          nro_calle: userData.direccion.nro_calle,
+          cod_postal: userData.direccion.cod_postal,
+          id_localidad: userData.direccion.id_localidad,
+        },
+      });
+    }
+  
 
-    return await prisma.usuario.update({
+    const updatedUser = await prisma.usuario.update({
       where: { id_usuario: id },
-      data: userData,
+      data: {
+        nombre: userData.nombre,
+        apellido: userData.apellido,
+        dni: userData.dni,
+        email: userData.email,
+        nro_celular: userData.nro_celular,
+        password: userData.password, // opcional
+        rol: {
+          connect: { id_rol: userData.id_rol },
+        },
+        
+      },
     });
-  },
-
+  
+    return updatedUser;
+  }
+  
+  ,
+  
   // async deleteUser(id: number) {
   //   return await prisma.usuario.delete({
   //     where: { id_usuario: id },

@@ -34,8 +34,7 @@ export const userController = {
          res.status(404).json({ error: 'Usuario no encontrado' });
          return;
       }
-
-      res.json(user); // ✅ Devuelve la respuesta correctamente
+      res.json(user); 
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Error interno del servidor' });
@@ -46,8 +45,11 @@ export const userController = {
     try {
       const id = parseInt(req.params.id);
       const data = userValidator.update.parse(req.body);
+      console.log('Datos recibidos en el backend:', req.body);
+      console.log('Datos recibidos:', data);
       const updatedUser = await userService.updateUser(id, data);
       res.json(updatedUser);
+      console.log('Usuario actualizado:', updatedUser);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../pages/Carrito.css'; // Asegúrate que esta ruta esté bien
+import '../pages/Carrito.css';
 
 function Carrito({ cartItems, clearCart }) {
   const discount = 40000;
@@ -11,7 +11,7 @@ function Carrito({ cartItems, clearCart }) {
 
   const handleCheckout = () => {
     alert('¡Compra confirmada!');
-    clearCart(); // Limpia el carrito después de confirmar
+    clearCart();
   };
 
   return (
