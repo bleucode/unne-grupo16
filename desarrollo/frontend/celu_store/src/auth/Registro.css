@@ -1,0 +1,73 @@
+/* auth/Registro.css */
+.registro-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Mantenerlo en la parte superior */
+    padding: 40px 20px;
+    background-color: #f0f0f0; /* Fondo gris claro */
+    height: auto;
+}
+
+.registro-form {
+    background: #fff;
+    padding: 40px; /* Mantiene el padding amplio */
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 500px; /* Ancho ajustado */
+    max-width: 90%; /* Asegura que el formulario no se desborde en pantallas pequeñas */
+    margin-top: 50px; /* Da espacio desde la parte superior de la pantalla */
+}
+
+.registro-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.registro-form input {
+    width: 100%;
+    padding: 12px; /* Aumentamos el tamaño del padding para los inputs */
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.registro-form button {
+    width: 100%;
+    padding: 12px; /* Aumentamos el tamaño del padding en el botón */
+    background-color: #dc2626; /* Rojo para el botón */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.registro-form button:hover {
+    background-color: #b91c1c; /* Rojo más oscuro en hover */
+}
+
+/* Estilos para el select */
+.custom-select {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+  }
+  
+  .custom-select:focus {
+    border-color: #007bff;
+    background-color: #fff;
+    outline: none;
+  }
+  
+  .custom-select option {
+    padding: 10px;
+    font-size: 16px;
+  }
+  

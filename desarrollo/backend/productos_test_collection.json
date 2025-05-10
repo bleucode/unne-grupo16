@@ -1,0 +1,179 @@
+{
+	"info": {
+		"_postman_id": "ac523a07-8c2c-4e97-9560-7528813a177c",
+		"name": "Productos API Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44473918"
+	},
+	"item": [
+		{
+			"name": "Listar productos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/product",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener producto por ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/product/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"product",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear producto",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo3LCJlbWFpbCI6Impvc2VAZXhhbXBsZS5jb20iLCJub21icmUiOiJqdWxpYW4iLCJpZF9yb2wiOjEsImlhdCI6MTc0NTc5MDUzNywiZXhwIjoxNzQ2Mzk1MzM3fQ.rGPCfAvtBh43Lu-VwgHPB-vK7u9GaRQX8i5tYKdS7Qw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n                        \"nombre\": \"iPhone 15 Pro\",\n                        \"descripcion\": \"Último modelo de Apple\",\n                        \"especificacion\": \"256GB, Titanio, 5G\",\n                        \"precio\": 1599.99,\n                        \"stock\": 10,\n                        \"imagen\": \"https://url-imagen.com/iphone15.jpg\",\n                        \"estado\": true,\n                        \"id_modelo\": 1,\n                        \"id_categoria\": 1\n                    }"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/product",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar producto",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo3LCJlbWFpbCI6Impvc2VAZXhhbXBsZS5jb20iLCJub21icmUiOiJqdWxpYW4iLCJpZF9yb2wiOjEsImlhdCI6MTc0NTc5MDUzNywiZXhwIjoxNzQ2Mzk1MzM3fQ.rGPCfAvtBh43Lu-VwgHPB-vK7u9GaRQX8i5tYKdS7Qw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n                        \"precio\": 1499.99,\n                        \"stock\": 15\n                    }"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/product/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"product",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar producto",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo3LCJlbWFpbCI6Impvc2VAZXhhbXBsZS5jb20iLCJub21icmUiOiJqdWxpYW4iLCJpZF9yb2wiOjEsImlhdCI6MTc0NTc5MDUzNywiZXhwIjoxNzQ2Mzk1MzM3fQ.rGPCfAvtBh43Lu-VwgHPB-vK7u9GaRQX8i5tYKdS7Qw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/product/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"product",
+						"5"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,187 @@
+/* Estilos generales */
+.usuarios-container {
+  background: #f9fafb;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.search-bar {
+  display: flex;
+  margin-bottom: 20px;
+  max-width: 400px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+}
+
+.search-bar button {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 0 20px;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+}
+
+.user-table th, .user-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #dc2626;
+  color: white;
+}
+
+.user-table td button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  background: #dc2626;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 450px; /* Tamaño ajustado a 450px */
+  max-width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  overflow-y: auto;
+}
+
+.modal h2 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.modal p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between; /* Botones alineados a los extremos */
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-btn.confirm {
+  background-color: #d9534f;
+  color: white;
+  border: 1px solid #d43f00;
+}
+
+.modal-btn.cancel {
+  background-color: #5bc0de;
+  color: white;
+  border: 1px solid #31b0d5;
+}
+
+.modal-btn:hover {
+  opacity: 0.8;
+}
+
+.modal-btn.confirm:hover {
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
+
+.modal-btn.cancel:hover {
+  background-color: #31b0d5;
+  border-color: #27a2c2;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.close:hover {
+  color: #333;
+}
+
+/* Estilo para inputs y selects dentro del modal */
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 400px; /* Limitar la altura máxima del formulario */
+  overflow-y: auto; /* Permitir scroll si el contenido excede la altura */
+}
+
+.modal label {
+  font-weight: bold;
+}
+
+.modal input,
+.modal select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%; /* Hacer que los inputs y selects ocupen el 100% del ancho */
+}
+
+/* Responsividad */
+@media (max-width: 600px) {
+  .modal {
+    width: 90%; /* Ajustar el ancho en pantallas pequeñas */
+    max-width: 95%;
+  }
+
+  .modal-btn {
+    width: 100%;  /* Asegurar que los botones ocupen todo el ancho */
+  }
+
+  .modal-buttons {
+    flex-direction: column; /* Apilar botones en pantallas pequeñas */
+  }
+}
+

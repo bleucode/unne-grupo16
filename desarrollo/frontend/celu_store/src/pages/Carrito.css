@@ -1,0 +1,209 @@
+.carrito-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .carrito-content {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  
+  /* Productos */
+  .cart-items {
+    flex: 2;
+  }
+  
+  .cart-item {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .item-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .item-details {
+    flex-grow: 1;
+  }
+  
+  .item-prices {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+  }
+  
+  .original-price {
+    text-decoration: line-through;
+    color: #888;
+  }
+  
+  .offer-price {
+    color: #dc2626;
+    font-weight: bold;
+  }
+  
+  .item-quantity {
+    margin-top: 8px;
+  }
+  
+  .item-quantity input {
+    width: 50px;
+    margin-left: 5px;
+  }
+  
+  .remove-btn {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .clear-btn {
+    margin-top: 20px;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .empty-cart {
+    font-size: 1.2rem;
+    color: #555;
+    margin-top: 30px;
+  }
+  
+  /* Resumen del pedido */
+  .order-summary {
+    flex: 1;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 15px;
+    background: #fafafa;
+    min-width: 280px;
+  }
+  
+  .delivery-options {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+  }
+  
+  .delivery-options button {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #dc2626;
+    background: white;
+    color: #dc2626;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .delivery-selected {
+    background-color: #dc2626;
+    color: white;
+  }
+  
+  .price-summary {
+    margin: 20px 0;
+  }
+  
+  .line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .coupon {
+    margin: 20px 0;
+    display: flex;
+  }
+  
+  .coupon input {
+    flex: 2;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px 0 0 8px;
+  }
+  
+  .coupon button {
+    flex: 1;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+  }
+  
+  .total {
+    font-size: 1.5rem;
+    margin: 20px 0;
+    text-align: right;
+  }
+  
+  .checkout-btn {
+    width: 100%;
+    background-color: #dc2626;
+    color: white;
+    padding: 12px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  
+  .continue-shopping {
+    width: 100%;
+    background: transparent;
+    color: #dc2626;
+    border: 1px solid #dc2626;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  /* RESPONSIVE 📱 */
+  @media (max-width: 768px) {
+    .carrito-content {
+      flex-direction: column;
+    }
+    
+    .cart-item {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .item-image {
+      width: 80px;
+      height: 80px;
+    }
+  
+    .item-details {
+      margin-top: 10px;
+    }
+  
+    .order-summary {
+      margin-top: 30px;
+    }
+  }
+  
