@@ -21,6 +21,9 @@ export const authService = {
     if (!user) throw new Error('Email no encontrado');
 
     const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log('Password recibido:', JSON.stringify(password));
+console.log('Password guardado en BD:', JSON.stringify(user.password));
+
     if (!passwordMatch) throw new Error('Contraseña incorrecta');
     console.log("JWT_SECRET:", jwtConfig.secret);
     const token = jwt.sign(
