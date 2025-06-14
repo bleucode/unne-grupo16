@@ -6,8 +6,8 @@ import { userValidator } from '../validators/user.validator';
 
 export const register: RequestHandler = async (req, res, next) => {
   try {
-    const data = userValidator.register.parse(req.body);
-    const user = await authService.register(data);
+    const data = userValidator.register.parse(req.body);// Valida con Zod
+    const user = await authService.register(data);//Lógica principal
     res.status(201).json(user);
   } catch (error: any) {
     res.status(400).json({ error: error.message });

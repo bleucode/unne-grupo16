@@ -7,14 +7,17 @@ import { jwtConfig } from '../config/jwt';
 // como el registro y login de los usuarios
 
 export const authService = {
-  // Función para registrar un nuevo usuario
+  // Función para registrar un nuevo usuario,verificamos si el email ya esta registrado y buscamos/creamos direccion si es necesario
   register: async (userData: any) => {
+     console.log('Datos recibidos en register:', userData);
+    //Verificamos si ya existe el email
     const existingUser = await userService.getUserByEmail(userData.email);
     if (existingUser) {
       throw new Error('El email ya está registrado');
     }
     // Hasheamos la contraseña
     const hashedPassword = await bcrypt.hash(userData.password, 10);
+    // Creamos el usuario
     const user = await userService.registerUser({ ...userData, password: hashedPassword });
 
     return user;

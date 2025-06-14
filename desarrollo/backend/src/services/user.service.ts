@@ -42,8 +42,23 @@ export const userService = {
   async createDireccion(direccionData: any) {
     const { calle, nro_calle, cod_postal, nombre_localidad } = direccionData;
 
+    //const localidad = await this.createLocalidad(nombre_localidad);
     const localidad = await this.createLocalidad(nombre_localidad);
+   // Verifica si la dirección ya existe
+    const direccionExistente = await prisma.direccion.findFirst({
+      where: {
+        calle,
+        nro_calle,
+        cod_postal,
+        id_localidad: localidad.id_localidad,
+      },
+    });
+    
+    if (direccionExistente) {
+      return direccionExistente;
+    }
 
+    // Si no existe, la crea
     const newDireccion = await prisma.direccion.create({
       data: {
         calle,
@@ -53,24 +68,17 @@ export const userService = {
       },
     });
 
-    if (!newDireccion.id_direccion) {
-      throw new Error('La dirección no se creó correctamente');
-    }
-
     return newDireccion;
   },
 
   // Función para registrar al usuario
   // En nuestro diagrama de secuencia: Registrar_usuario()
   async registerUser(userData: any) {
-    console.log("Datos del usuario:", userData);
-    console.log("Password antes de hashear:", userData.password);  // Verifica la contraseña antes de hashearla
-    if (!userData.direccion) {
-      throw new Error('Datos de dirección faltantes');
+   
+    if (!userData.nombre || !userData.apellido || !userData.email || !userData.password||!userData.direccion||!userData.nro_celular||!userData.dni) {
+      throw new Error("Faltan datos obligatorios del usuario");
     }
 
-    const hashedPassword = userData.password;
-    console.log("Contraseña hasheada:", hashedPassword);  // Verifica el hash generado
 
     const direccion = await this.createDireccion(userData.direccion);
 
@@ -93,7 +101,7 @@ export const userService = {
         email: userData.email,
         nro_celular: userData.nro_celular,
         id_rol: rol.id_rol,  // Usamos el rol por defecto
-        password: hashedPassword,
+        password: userData.password,// Asignamos la contraseña hasheada
         fecha_registro: new Date(),  // Asignamos la fecha actual si no se proporciona
         estado: userData.estado !== undefined ? userData.estado : true,  // Si no se proporciona, se asigna 'true' por defecto
         id_direccion: direccion.id_direccion,
