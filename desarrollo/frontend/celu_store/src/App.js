@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
 import Login from './auth/Login';
 import Registro from './auth/Registro';
 import AdminPanel from './admin/AdminPanel';
-import Carrito from './pages/Carrito'; // Asegúrate de importar Carrito correctamente
+import Carrito from './pages/Carrito';
+import Checkout from './pages/Checkout';
 import { FaShoppingCart } from 'react-icons/fa';
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
+  const [productos, setProductos] = useState([]);
 
-  // Función para agregar productos al carrito
+  useEffect(() => {
+    fetch('http://localhost:4000/api/productos')
+      .then(res => res.json())
+      .then(data => setProductos(data))
+      .catch(err => console.error('Error al obtener productos', err));
+  }, []);
+
   const agregarAlCarrito = (producto) => {
     setCartItems((prevCartItems) => {
       const existingProduct = prevCartItems.find((item) => item.id === producto.id);
@@ -23,16 +31,9 @@ function App() {
     });
   };
 
-  // ✅ Función para vaciar el carrito
   const clearCart = () => {
     setCartItems([]);
   };
-
-  const productos = [
-    { id: 1, name: 'Celular', price: 3000, image: 'https://via.placeholder.com/150?text=Celular' },
-    { id: 2, name: 'Smartwatch', price: 1500, image: 'https://via.placeholder.com/150?text=Smartwatch' },
-    { id: 3, name: 'Auriculares', price: 800, image: 'https://via.placeholder.com/150?text=Auriculares' },
-  ];
 
   return (
     <Router>
@@ -46,9 +47,7 @@ function App() {
             <a href="#">Contáctenos</a>
           </div>
           <div className="navbar-account">
-            <Link to="/login">
-              <button>Mi Cuenta</button>
-            </Link>
+            <Link to="/login"><button>Mi Cuenta</button></Link>
             <Link to="/carrito" className="cart-icon">
               <FaShoppingCart size={10} />
               {cartItems.length > 0 && <span className="cart-count">{cartItems.length}</span>}
@@ -56,40 +55,32 @@ function App() {
           </div>
         </nav>
 
-        {/* Rutas de la página */}
         <Routes>
           <Route
             path="/"
             element={
               <div>
-                <div className="header">
-                  <div className="logo">
-                    <span>Mi Tienda</span>
-                  </div>
-                  <div className="search-bar">
-                    <input type="text" placeholder="Buscar productos..." />
-                    <button>Buscar</button>
-                  </div>
-                </div>
-
-                <div className="categories">
-                  {['Celulares', 'Smartwatch', 'Auriculares', 'Cargadores', 'Memorias SD'].map((item) => (
-                    <div key={item} className="category">
-                      <div className="icon">📱</div>
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
+                {/* ... tu header y categorías */}
 
                 <div className="offers">
                   <h2>PRODUCTOS</h2>
                   <div className="products">
                     {productos.map((producto) => (
-                      <div key={producto.id} className="product-card">
-                        <img src={producto.image} alt={producto.name} />
-                        <h3>{producto.name}</h3>
-                        <p>${producto.price}</p>
-                        <button className="add-to-cart-button" onClick={() => agregarAlCarrito(producto)}>
+                      <div key={producto.id_producto} className="product-card">
+                        <img src={producto.imagen} alt={producto.nombre} />
+                        <h3>{producto.nombre}</h3>
+                        <p>${producto.precio}</p>
+                        <button
+                          className="add-to-cart-button"
+                          onClick={() =>
+                            agregarAlCarrito({
+                              id: producto.id_producto,
+                              name: producto.nombre,
+                              price: producto.precio,
+                              image: producto.imagen,
+                            })
+                          }
+                        >
                           Agregar al carrito
                         </button>
                       </div>
@@ -102,9 +93,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/admin" element={<AdminPanel />} />
-
-          {/* ✅ Acá pasamos también clearCart además de cartItems */}
           <Route path="/carrito" element={<Carrito cartItems={cartItems} clearCart={clearCart} />} />
+          <Route path="/checkout" element={<Checkout cartItems={cartItems} clearCart={clearCart} />} />
         </Routes>
       </div>
     </Router>

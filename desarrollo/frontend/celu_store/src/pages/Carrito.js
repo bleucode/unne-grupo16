@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../pages/Carrito.css';
 
 function Carrito({ cartItems, clearCart }) {
+  const navigate = useNavigate();
   const discount = 40000;
   
   const subtotal = cartItems.reduce((acc, product) => 
@@ -10,7 +12,8 @@ function Carrito({ cartItems, clearCart }) {
   const total = subtotal - discount;
 
   const handleCheckout = () => {
-    alert('¡Compra confirmada!');
+    navigate('/checkout');
+    
     clearCart();
   };
 
@@ -54,11 +57,6 @@ function Carrito({ cartItems, clearCart }) {
         <div className="order-summary">
           <h3>Resumen del pedido</h3>
 
-          <div className="delivery-options">
-            <button className="delivery-selected">Envío</button>
-            <button>Retiro</button>
-          </div>
-
           <div className="price-summary">
             <div className="line">
               <span>Subtotal:</span>
@@ -68,14 +66,6 @@ function Carrito({ cartItems, clearCart }) {
               <span>Descuentos:</span>
               <span>-${discount.toLocaleString()}</span>
             </div>
-          </div>
-
-          <div className="coupon">
-            <input 
-              type="text" 
-              placeholder="Ingresá tu código" 
-            />
-            <button>Agregar</button>
           </div>
 
           <div className="total">

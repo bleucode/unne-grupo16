@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Productos.css';
 
 function Productos() {
-  const [productos, setProductos] = useState([
-    { id: 1, nombre: 'Laptop', categoria: 'Electrónica', precio: 1500, stock: 10 },
-    { id: 2, nombre: 'Mouse', categoria: 'Accesorios', precio: 25, stock: 100 },
-    { id: 3, nombre: 'Monitor', categoria: 'Electrónica', precio: 300, stock: 20 },
-  ]);
+  const [productos, setProductos] = useState([]);
+
+  const fetchProductos = () => {
+    fetch('http://localhost:4000/api/productos')
+      .then(res => res.json())
+      .then(data => setProductos(data))
+      .catch(err => console.error('Error al obtener productos', err));
+  };
+
+  useEffect(() => {
+    fetchProductos();
+  }, []);
 
   const [search, setSearch] = useState('');
   const [selectedProducto, setSelectedProducto] = useState(null);
@@ -14,7 +21,7 @@ function Productos() {
   const [addMode, setAddMode] = useState(false);
 
   const filteredProductos = productos.filter(prod =>
-    `${prod.nombre} ${prod.categoria}`.toLowerCase().includes(search.toLowerCase())
+    `${prod.nombre} ${prod.categoria.nombre}`.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleView = (prod) => {
@@ -30,23 +37,91 @@ function Productos() {
   };
 
   const handleAdd = () => {
-    setSelectedProducto({ nombre: '', categoria: '', precio: '', stock: '' });
+    setSelectedProducto({
+      nombre: '',
+      descripcion: '',
+      especificacion: '',
+      precio: '',
+      stock: '',
+      imagen: '',
+      estado: true,
+      modelo: {
+        descripcion: '',
+        marca: {
+          descripcion: ''
+        }
+      },
+      categoria: {
+        nombre: ''
+      }
+    });
     setAddMode(true);
     setEditMode(false);
   };
 
-  const handleDelete = (id) => {
-    setProductos(productos.filter(p => p.id !== id));
+
+
+  const handleSave = async () => {
+    try {
+      const payload = {
+        nombre: selectedProducto.nombre || '',
+        descripcion: selectedProducto.descripcion || '',
+        especificacion: selectedProducto.especificacion || '',
+        precio: Number(selectedProducto.precio) || 0,
+        stock: parseInt(selectedProducto.stock) || 0,
+        imagen: selectedProducto.imagen || '',
+        estado: selectedProducto.estado !== undefined ? selectedProducto.estado : true,
+        modelo: selectedProducto.modelo?.descripcion && selectedProducto.modelo?.marca?.descripcion
+        ? {
+            descripcion: selectedProducto.modelo.descripcion,
+            marca: {
+              descripcion: selectedProducto.modelo.marca.descripcion,
+            },
+          }
+        : undefined,
+        categoria: { nombre: selectedProducto.categoria?.nombre || 'Default Categoria' }
+      };
+
+      const url = addMode
+        ? 'http://localhost:4000/api/productos'
+        : `http://localhost:4000/api/productos/${selectedProducto.id_producto}`;
+
+      const method = addMode ? 'POST' : 'PUT';
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al guardar el producto');
+      }
+
+      const savedProduct = await response.json();
+      if (addMode) {
+        setProductos([...productos, savedProduct]);
+      } else {
+        setProductos(productos.map(p => (p.id_producto === savedProduct.id_producto ? savedProduct : p)));
+      }
+
+      closeModal();
+
+    } catch (error) {
+      console.error('Error guardando producto:', error);
+    }
   };
 
-  const handleSave = () => {
-    if (addMode) {
-      const newProd = { ...selectedProducto, id: Date.now() };
-      setProductos([...productos, newProd]);
-    } else {
-      setProductos(productos.map(p => (p.id === selectedProducto.id ? selectedProducto : p)));
+
+  // Eliminar producto
+  const handleDelete = async (id) => {
+    if (!window.confirm('¿Seguro que querés eliminar este producto?')) return;
+    try {
+      await fetch(`http://localhost:4000/api/productos/${id}`, { method: 'DELETE' });
+      setProductos(productos.filter(p => p.id_producto !== id));
+    } catch (error) {
+      console.error('Error eliminando producto', error);
     }
-    closeModal();
   };
 
   const closeModal = () => {
@@ -82,15 +157,15 @@ function Productos() {
         </thead>
         <tbody>
           {filteredProductos.map(prod => (
-            <tr key={prod.id}>
+            <tr key={prod.id_producto}>
               <td>{prod.nombre}</td>
-              <td>{prod.categoria}</td>
+              <td>{prod.categoria?.nombre || 'Sin categoría'}</td>
               <td>${prod.precio}</td>
               <td>{prod.stock}</td>
               <td>
                 <button onClick={() => handleView(prod)}>Ver</button>
                 <button onClick={() => handleEdit(prod)}>Modificar</button>
-                <button onClick={() => handleDelete(prod.id)}>Dar de baja</button>
+                <button onClick={() => handleDelete(prod.id_producto)}>Dar de baja</button>
               </td>
             </tr>
           ))}
@@ -109,13 +184,7 @@ function Productos() {
                 value={selectedProducto.nombre}
                 onChange={(e) => setSelectedProducto({ ...selectedProducto, nombre: e.target.value })}
                 disabled={!editMode && !addMode}
-              />
-              <label>Categoría:</label>
-              <input
-                type="text"
-                value={selectedProducto.categoria}
-                onChange={(e) => setSelectedProducto({ ...selectedProducto, categoria: e.target.value })}
-                disabled={!editMode && !addMode}
+                required
               />
               <label>Precio:</label>
               <input
@@ -123,6 +192,7 @@ function Productos() {
                 value={selectedProducto.precio}
                 onChange={(e) => setSelectedProducto({ ...selectedProducto, precio: parseFloat(e.target.value) })}
                 disabled={!editMode && !addMode}
+                required
               />
               <label>Stock:</label>
               <input
@@ -130,7 +200,46 @@ function Productos() {
                 value={selectedProducto.stock}
                 onChange={(e) => setSelectedProducto({ ...selectedProducto, stock: parseInt(e.target.value) })}
                 disabled={!editMode && !addMode}
+                required
               />
+              <label>Marca:</label>
+              <input
+                type="text"
+                value={selectedProducto.modelo?.marca?.descripcion || ''}
+                onChange={(e) => setSelectedProducto({
+                  ...selectedProducto,
+                  modelo: {
+                    ...(selectedProducto.modelo || {}),
+                    marca: { descripcion: e.target.value }
+                  }
+                })}
+              />
+
+              <label>Modelo:</label>
+              <input
+                type="text"
+                value={selectedProducto.modelo?.descripcion || ''}
+                onChange={(e) => setSelectedProducto({
+                  ...selectedProducto,
+                  modelo: {
+                    ...(selectedProducto.modelo || {}),
+                    descripcion: e.target.value,
+                    marca: selectedProducto.modelo?.marca || {}
+                  }
+                })}
+              />
+
+              <label>Categoría:</label>
+              <input
+                type="text"
+                value={selectedProducto.categoria?.nombre || ''}
+                onChange={(e) => setSelectedProducto({
+                  ...selectedProducto,
+                  categoria: { nombre: e.target.value }
+                })}
+              />
+
+
               {(editMode || addMode) && <button type="submit" className="save-btn">Guardar</button>}
             </form>
           </div>

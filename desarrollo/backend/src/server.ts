@@ -2,14 +2,21 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import { router } from './routes';
+import { router } from './routes';  // tu router principal
 
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3001',
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
+
 app.use(express.json());
 
+// Este monta todas las rutas definidas en routes/index.ts bajo '/api'
 app.use('/api', router);
 
 const PORT = process.env.PORT || 3000;
