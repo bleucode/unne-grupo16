@@ -8,7 +8,7 @@ import { jwtConfig } from '../config/jwt';
 
 export const authService = {
   // Función para registrar un nuevo usuario,verificamos si el email ya esta registrado y buscamos/creamos direccion si es necesario
-  register: async (userData: any) => {
+  regitrar_usuario: async (userData: any) => {
      console.log('Datos recibidos en register:', userData);
     //Verificamos si ya existe el email
     const existingUser = await userService.getUserByEmail(userData.email);
@@ -25,7 +25,7 @@ export const authService = {
 
   // Función para iniciar sesión, en nuestro diagrama de secuencia Iniciar_sesion() 
   // Verificamos si el usuario existe y si la contraseña es correcta
-  login: async (email: string, password: string) => {
+  iniciar_sesion: async (email: string, password: string) => {
     const user = await userService.getUserByEmail(email);
     if (!user) throw new Error('Email no encontrado');
 

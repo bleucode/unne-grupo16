@@ -1,0 +1,248 @@
+{
+	"info": {
+		"_postman_id": "504bd553-a3a5-4901-bda2-4a9bb5d65f9b",
+		"name": "API Ventas y Envíos",
+		"description": "Pruebas para endpoints de ventas y envío",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44473918"
+	},
+	"item": [
+		{
+			"name": "Crear venta – Checkout válido",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoianVsaWFuIiwiaWRfcm9sIjoxLCJpYXQiOjE3NTAwMjM4ODksImV4cCI6MTc1MDYyODY4OX0.djJK9hBpdiPdgDO_dkI5Q0atBA3EBL4Cqoju7MbfLyQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"clienteId\": 1,\n  \"idMetodoPago\": 7,\n  \"cuotaId\": 1,\n  \"direccionEnvioId\": 1,\n  \"items\": [\n    { \"productoId\": 1, \"cantidad\": 2 },\n    { \"productoId\": 1, \"cantidad\": 1 }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/ventas",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"ventas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear venta – Carrito vacío (Error)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoianVsaWFuIiwiaWRfcm9sIjoxLCJpYXQiOjE3NTAwMjM4ODksImV4cCI6MTc1MDYyODY4OX0.djJK9hBpdiPdgDO_dkI5Q0atBA3EBL4Cqoju7MbfLyQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"clienteId\": 1,\n  \"metodoPagoId\": 2,\n  \"direccionEnvioId\": 4,\n  \"items\": []\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/ventas",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"ventas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar todas las ventas",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoianVsaWFuIiwiaWRfcm9sIjoxLCJpYXQiOjE3NTAwMjM4ODksImV4cCI6MTc1MDYyODY4OX0.djJK9hBpdiPdgDO_dkI5Q0atBA3EBL4Cqoju7MbfLyQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/ventas",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"ventas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener venta por ID",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoianVsaWFuIiwiaWRfcm9sIjoxLCJpYXQiOjE3NTAwMjM4ODksImV4cCI6MTc1MDYyODY4OX0.djJK9hBpdiPdgDO_dkI5Q0atBA3EBL4Cqoju7MbfLyQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/ventas/:id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"ventas",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "ID de la venta a consultar"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar envío – Agregar seguimiento",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoiSnVhbiBDYXJsb3MiLCJpZF9yb2wiOjEsImlhdCI6MTc1MDAzMjg4NywiZXhwIjoxNzUwNjM3Njg3fQ.XCjepRko_iEfxl3EdFTPv26oXThV6FgkzMpl8DiK8Fc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"estado_envio\": \"Enviado\",\n  \"cod_seguimiento\": \"ABC123XYZ\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/envios/:id",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"envios",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "ID de la venta cuyo envío se actualiza"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Envio-Consulta Estado",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/envios/track/:codigo",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"envios",
+						"track",
+						":codigo"
+					],
+					"variable": [
+						{
+							"key": "codigo",
+							"value": "ABC123XYZ"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

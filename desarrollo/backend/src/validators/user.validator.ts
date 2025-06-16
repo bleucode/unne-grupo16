@@ -1,27 +1,28 @@
 import { z } from 'zod';
-export const userValidator = {
-  register: z.object({
-    nombre: z.string(),
-    apellido: z.string(),
-    dni: z.string(),
-    email: z.string().email(),
-    nro_celular: z.string(),
+
+export const validadorUsuario = {
+  registrar: z.object({
+    nombre: z.string({ message: 'Nombre requerido' }),
+    apellido: z.string({ message: 'Apellido requerido' }),
+    dni: z.string({ message: 'DNI requerido' }),
+    email: z.string().email({ message: 'Email inválido' }),
+    nro_celular: z.string({ message: 'Número celular requerido' }),
     direccion: z.object({
-      calle: z.string(),
-      nro_calle: z.string(),
-      cod_postal: z.string(),
-      id_localidad: z.number(),
+      calle: z.string({ message: 'Calle requerida' }),
+      nro_calle: z.string({ message: 'Número de calle requerido' }),
+      cod_postal: z.string({ message: 'Código postal requerido' }),
+      id_localidad: z.number({ message: 'ID de localidad requerido' }),
     }),
-    id_rol: z.number(),
-    password: z.string().min(6),
-    fecha_registro: z.date().or(z.string().transform(str => new Date(str))).optional(), // Hacer fecha_registro opcional
-    estado: z.boolean().optional(), // Hacer estado opcional
+    id_rol: z.number({ message: 'ID de rol requerido' }),
+    password: z.string().min(6, { message: 'Contraseña muy corta' }),
+    fecha_registro: z.date().or(z.string().transform(str => new Date(str))).optional(),
+    estado: z.boolean().optional(),
   }),
-  update: z.object({
+  actualizar: z.object({
     nombre: z.string().optional(),
     apellido: z.string().optional(),
     dni: z.string().optional(),
-    email: z.string().email().optional(),
+    email: z.string().email({ message: 'Email inválido' }).optional(),
     nro_celular: z.string().optional(),
     direccion: z.object({
       id_direccion: z.number().optional(),
@@ -31,7 +32,11 @@ export const userValidator = {
       id_localidad: z.number().optional(),
     }).optional(),
     id_rol: z.number().optional(),
-    password: z.string().min(6).optional(),
+    password: z.string().min(6, { message: 'Contraseña muy corta' }).optional(),
     estado: z.boolean().optional(),
+  }),
+  iniciar_sesion: z.object({
+    email: z.string().email({ message: 'Email inválido' }),
+    password: z.string().min(6, { message: 'Contraseña muy corta' }),
   }),
 };

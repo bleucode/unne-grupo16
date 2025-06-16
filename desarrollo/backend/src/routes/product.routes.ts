@@ -14,16 +14,16 @@ productRouter.get('/:id', productController.getById);
 // Crear producto (Vendedor y ADMIN)
 productRouter.post(
   '/',
-  //authMiddleware.verifyToken,
-  //roleMiddleware.authorizeRoles('1','2'),
+  authMiddleware.verifyToken,
+  roleMiddleware.authorizeRoles('1','2'),
   productController.create
 );
 
 // Actualizar producto (Vendedor y ADMIN)
 productRouter.put(
   '/:id',
-  //authMiddleware.verifyToken,
-  //roleMiddleware.authorizeRoles('1','2'),
+  authMiddleware.verifyToken,
+  roleMiddleware.authorizeRoles('1','2'),
   productController.update
 );
 
@@ -35,4 +35,4 @@ productRouter.delete(
   productController.delete
 );
 
-// export default productRouter;
+export default productRouter;

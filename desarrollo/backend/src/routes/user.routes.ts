@@ -5,16 +5,16 @@ import { roleMiddleware } from '../middlewares/role.middleware';
 
 export const userRouter = Router();
 
-userRouter.post('/register', userController.register);
+// userRouter.post('/register', userController.r);
 userRouter.get(
     '/allusers',
     authMiddleware.verifyToken,
     roleMiddleware.authorizeRoles('1'), // Solo Admin
     userController.getAll
   );
-userRouter.get('/:id', userController.getById);
-userRouter.get('/address/:id', userController.getAddressById);
-userRouter.put('/:id', userController.update);
-userRouter.delete('/:id', userController.delete);
+userRouter.get('/:id',  authMiddleware.verifyToken,userController.getById);
+userRouter.get('/address/:id',  authMiddleware.verifyToken,userController.getAddressById);
+userRouter.put('/:id',  authMiddleware.verifyToken,userController.update);
+userRouter.delete('/:id', authMiddleware.verifyToken, userController.delete);
 
 export default userRouter;
