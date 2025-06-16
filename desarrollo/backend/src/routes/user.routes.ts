@@ -5,7 +5,7 @@ import { roleMiddleware } from '../middlewares/role.middleware';
 
 export const userRouter = Router();
 
-userRouter.post('/register', userController.register);
+// userRouter.post('/register', userController.r);
 userRouter.get(
     '/allusers',
     authMiddleware.verifyToken,

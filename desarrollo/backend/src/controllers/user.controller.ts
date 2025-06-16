@@ -1,23 +1,23 @@
 import { Request, Response } from 'express';
 import { userService } from '../services/user.service';
-import { userValidator } from '../validators/user.validator';
+import { validadorUsuario } from '../validators/user.validator';
 
 // En este controlador se manejan las peticiones de los usuarios
 // y se comunican con el servicio de usuarios para realizar las operaciones necesarias
 
 export const userController = {
-  register: async (req: Request, res: Response) => {
-    try {
-      const data = userValidator.register.parse(req.body);
+  // register: async (req: Request, res: Response) => {
+  //   try {
+  //     const data = validadorUsuario.register.parse(req.body);
 
-      // Pasamos los datos de la dirección dentro del objeto de usuario
-      const newUser = await userService.registerUser(data);
+  //     // Pasamos los datos de la dirección dentro del objeto de usuario
+  //     const newUser = await userService.registerUser(data);
 
-      res.status(201).json(newUser);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message });
-    }
-  },
+  //     res.status(201).json(newUser);
+  //   } catch (error: any) {
+  //     res.status(400).json({ error: error.message });
+  //   }
+  // },
 
   getAll: async (_req: Request, res: Response) => {
     const users = await userService.getAllUsers();
@@ -47,8 +47,13 @@ export const userController = {
   update: async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
-      const data = userValidator.update.parse(req.body);
-      const updatedUser = await userService.updateUser(id, data);
+      // Obtener el usuario autenticado(estoa pra saer si es admin o no para acutlaizar el rol)
+      const loggedUser = (req as any).user;
+      console.log('req.user:', (req as any).user);
+      console.log('req.body:', req.body);
+
+      const data = validadorUsuario.actualizar.parse(req.body);
+      const updatedUser = await userService.updateUser(id, data,loggedUser);
       res.json(updatedUser);
     } catch (error: any) {
       res.status(400).json({ error: error.message });

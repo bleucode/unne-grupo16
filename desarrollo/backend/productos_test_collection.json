@@ -1,7 +1,8 @@
 {
 	"info": {
-		"_postman_id": "ac523a07-8c2c-4e97-9560-7528813a177c",
-		"name": "Productos API Testing",
+		"_postman_id": "ae360e59-62bd-4d56-9c18-8175cf045548",
+		"name": "Productos CRUD",
+		"description": "Colección para probar los endpoints de productos",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "44473918"
 	},
@@ -12,7 +13,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/api/product",
+					"raw": "http://localhost:3000/api/products",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -20,19 +21,19 @@
 					"port": "3000",
 					"path": [
 						"api",
-						"product"
+						"products"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Obtener producto por ID",
+			"name": "Ver producto por ID",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/api/product/5",
+					"raw": "http://localhost:3000/api/products/:id",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -40,8 +41,15 @@
 					"port": "3000",
 					"path": [
 						"api",
-						"product",
-						"5"
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "ID del producto a consultar"
+						}
 					]
 				}
 			},
@@ -55,7 +63,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo3LCJlbWFpbCI6Impvc2VAZXhhbXBsZS5jb20iLCJub21icmUiOiJqdWxpYW4iLCJpZF9yb2wiOjEsImlhdCI6MTc0NTc5MDUzNywiZXhwIjoxNzQ2Mzk1MzM3fQ.rGPCfAvtBh43Lu-VwgHPB-vK7u9GaRQX8i5tYKdS7Qw",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoianVsaWFuIiwiaWRfcm9sIjoxLCJpYXQiOjE3NTAwMjM4ODksImV4cCI6MTc1MDYyODY4OX0.djJK9hBpdiPdgDO_dkI5Q0atBA3EBL4Cqoju7MbfLyQ",
 							"type": "string"
 						}
 					]
@@ -63,30 +71,28 @@
 				"method": "POST",
 				"header": [
 					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					},
-					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"value": "application/json"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n                        \"nombre\": \"iPhone 15 Pro\",\n                        \"descripcion\": \"Último modelo de Apple\",\n                        \"especificacion\": \"256GB, Titanio, 5G\",\n                        \"precio\": 1599.99,\n                        \"stock\": 10,\n                        \"imagen\": \"https://url-imagen.com/iphone15.jpg\",\n                        \"estado\": true,\n                        \"id_modelo\": 1,\n                        \"id_categoria\": 1\n                    }"
+					"raw": "{\n  \"nombre\": \"pelota\",\n  \"descripcion\": \"Descripción de prueba\",\n  \"especificacion\": \"Especificaciones...\",\n  \"precio\": 99.99,\n  \"precio_descuento\": 79.99,\n  \"stock\": 50,\n  \"imagen\": \"https://ejemplo.com/img.png\",\n  \"id_modelo\": 1,\n  \"id_categoria\": 1,\n  \"id_marca\": 1\n}"
 				},
 				"url": {
-					"raw": "http://localhost:3000/api/product",
-					"protocol": "http",
+					"raw": "{{baseUrl}}/products",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "3000",
 					"path": [
-						"api",
-						"product"
+						"products"
+					],
+					"query": [
+						{
+							"key": null,
+							"value": "",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -100,7 +106,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo3LCJlbWFpbCI6Impvc2VAZXhhbXBsZS5jb20iLCJub21icmUiOiJqdWxpYW4iLCJpZF9yb2wiOjEsImlhdCI6MTc0NTc5MDUzNywiZXhwIjoxNzQ2Mzk1MzM3fQ.rGPCfAvtBh43Lu-VwgHPB-vK7u9GaRQX8i5tYKdS7Qw",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoianVsaWFuIiwiaWRfcm9sIjoxLCJpYXQiOjE3NDk5OTY3MzEsImV4cCI6MTc1MDYwMTUzMX0.dmGf8BgXCw_ZNKwfCsC5H4x7IvZGKbevLQC2EtEmDtY",
 							"type": "string"
 						}
 					]
@@ -108,31 +114,29 @@
 				"method": "PUT",
 				"header": [
 					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					},
-					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"value": "application/json"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n                        \"precio\": 1499.99,\n                        \"stock\": 15\n                    }"
+					"raw": "{\n  \"precio\": 119.99,\n  \"stock\": 40\n}"
 				},
 				"url": {
-					"raw": "http://localhost:3000/api/product/5",
-					"protocol": "http",
+					"raw": "{{baseUrl}}/products/:id",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "3000",
 					"path": [
-						"api",
-						"product",
-						"5"
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "2",
+							"description": "ID del producto a actualizar"
+						}
 					]
 				}
 			},
@@ -146,34 +150,39 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo3LCJlbWFpbCI6Impvc2VAZXhhbXBsZS5jb20iLCJub21icmUiOiJqdWxpYW4iLCJpZF9yb2wiOjEsImlhdCI6MTc0NTc5MDUzNywiZXhwIjoxNzQ2Mzk1MzM3fQ.rGPCfAvtBh43Lu-VwgHPB-vK7u9GaRQX8i5tYKdS7Qw",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoianVsaWFuIiwiaWRfcm9sIjoxLCJpYXQiOjE3NDk5OTY3MzEsImV4cCI6MTc1MDYwMTUzMX0.dmGf8BgXCw_ZNKwfCsC5H4x7IvZGKbevLQC2EtEmDtY",
 							"type": "string"
 						}
 					]
 				},
 				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/api/product/5",
-					"protocol": "http",
+					"raw": "{{baseUrl}}/products/:id",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "3000",
 					"path": [
-						"api",
-						"product",
-						"5"
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "2",
+							"description": "ID del producto a eliminar"
+						}
 					]
 				}
 			},
 			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
 		}
 	]
 }

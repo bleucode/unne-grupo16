@@ -42,8 +42,23 @@ export const userService = {
   async createDireccion(direccionData: any) {
     const { calle, nro_calle, cod_postal, nombre_localidad } = direccionData;
 
+    //const localidad = await this.createLocalidad(nombre_localidad);
     const localidad = await this.createLocalidad(nombre_localidad);
+   // Verifica si la dirección ya existe
+    const direccionExistente = await prisma.direccion.findFirst({
+      where: {
+        calle,
+        nro_calle,
+        cod_postal,
+        id_localidad: localidad.id_localidad,
+      },
+    });
+    
+    if (direccionExistente) {
+      return direccionExistente;
+    }
 
+    // Si no existe, la crea
     const newDireccion = await prisma.direccion.create({
       data: {
         calle,
@@ -53,32 +68,29 @@ export const userService = {
       },
     });
 
-    if (!newDireccion.id_direccion) {
-      throw new Error('La dirección no se creó correctamente');
-    }
-
     return newDireccion;
   },
 
   // Función para registrar al usuario
   // En nuestro diagrama de secuencia: Registrar_usuario()
   async registerUser(userData: any) {
-    if (!userData.direccion) {
-      throw new Error('Datos de dirección faltantes');
+   
+    if (!userData.nombre || !userData.apellido || !userData.email || !userData.password||!userData.direccion||!userData.nro_celular||!userData.dni) {
+      throw new Error("Faltan datos obligatorios del usuario");
     }
 
-    const hashedPassword = userData.password;
+
     const direccion = await this.createDireccion(userData.direccion);
 
     // Aseguramos que el rol por defecto exista
     let rol = await prisma.rol.findFirst({
-      where: { nombre_rol: "usuario" }, // Asegúrate de que el nombre del rol sea "usuario"
+      where: { nombre_rol: "cliente" }, // Asegúrate de que el nombre del rol sea "usuario"
     });
 
     if (!rol) {
       // Si el rol no existe, lo creamos
       rol = await prisma.rol.create({
-        data: { nombre_rol: "usuario" },
+        data: { nombre_rol: "cliente" },
       });
     }
     const newUser = await prisma.usuario.create({
@@ -89,9 +101,9 @@ export const userService = {
         email: userData.email,
         nro_celular: userData.nro_celular,
         id_rol: rol.id_rol,  // Usamos el rol por defecto
-        password: hashedPassword,
+        password: userData.password,// Asignamos la contraseña hasheada
         fecha_registro: new Date(),  // Asignamos la fecha actual si no se proporciona
-        estado: userData.estado !== undefined ? userData.estado : true,  // Si no se proporciona, se asigna 'true' por defecto
+        activo: userData.activo !== undefined ? userData.activo : true,  // Si no se proporciona, se asigna 'true' por defecto
         id_direccion: direccion.id_direccion,
       },
     });
@@ -101,7 +113,7 @@ export const userService = {
 
   // Funciones adicionales para obtener y actualizar usuarios
   async getAllUsers() {
-    return await prisma.usuario.findMany({where: { estado: true }});
+    return await prisma.usuario.findMany({where: { activo: true }});
   },
 
   async getUserById(id: number) {
@@ -116,71 +128,132 @@ export const userService = {
     });
   },
 
-  async updateUser(id: number, userData: any) {
+  //async updateUser(id: number, userData: any) {
+  // async updateUser(id: number, userData: any) {
+  //   console.log("Datos del usuario a actualizar:", userData);
   
-    // Verificar si el rol "administrador" existe
-    const adminRole = await prisma.rol.findUnique({
-      where: { id_rol: 2 },
-    });
+  //   // Verificar si el rol "administrador" existe
+  //   const adminRole = await prisma.rol.findUnique({
+  //     where: { id_rol: 2 },
+  //   });
   
-    if (!adminRole) {
-      await prisma.rol.create({
-        data: {
-          id_rol: 2,
-          nombre_rol: 'administrador',
-        },
-      });
-      console.log('Rol de administrador creado');
-    }
+  //   if (!adminRole) {
+  //     await prisma.rol.create({
+  //       data: {
+  //         id_rol: 2,
+  //         nombre_rol: 'administrador',
+  //       },
+  //     });
+  //     console.log('Rol de administrador creado');
+  //   }
   
-    // Si hay nueva contraseña, la encriptamos
-    if (userData.password) {
-      userData.password = await bcrypt.hash(userData.password, 10);
-    }
+  //   // Si hay nueva contraseña, la encriptamos
+  //   if (userData.password) {
+  //     userData.password = await bcrypt.hash(userData.password, 10);
+  //   }
   
-    // Primero actualizamos la dirección si viene en userData
-    if (userData.direccion && userData.direccion.id_direccion) {
-      await prisma.direccion.update({
-        where: { id_direccion: userData.direccion.id_direccion },
-        data: {
-          calle: userData.direccion.calle,
-          nro_calle: userData.direccion.nro_calle,
-          cod_postal: userData.direccion.cod_postal,
-          id_localidad: userData.direccion.id_localidad,
-        },
-      });
-    }
+  //   // Primero actualizamos la dirección si viene en userData
+  //   if (userData.direccion && userData.direccion.id_direccion) {
+  //     await prisma.direccion.update({
+  //       where: { id_direccion: userData.direccion.id_direccion },
+  //       data: {
+  //         calle: userData.direccion.calle,
+  //         nro_calle: userData.direccion.nro_calle,
+  //         cod_postal: userData.direccion.cod_postal,
+  //         id_localidad: userData.direccion.id_localidad,
+  //       },
+  //     });
+  //   }
   
 
-    const updatedUser = await prisma.usuario.update({
-      where: { id_usuario: id },
-      data: {
-        nombre: userData.nombre,
-        apellido: userData.apellido,
-        dni: userData.dni,
-        email: userData.email,
-        nro_celular: userData.nro_celular,
-        password: userData.password, // opcional
-        rol: {
-          connect: { id_rol: userData.id_rol },
-        },
+  //   const updatedUser = await prisma.usuario.update({
+  //     where: { id_usuario: id },
+  //     data: {
+  //       nombre: userData.nombre,
+  //       apellido: userData.apellido,
+  //       dni: userData.dni,
+  //       email: userData.email,
+  //       nro_celular: userData.nro_celular,
+  //       password: userData.password, // opcional
+  //       rol: {
+  //         connect: { id_rol: userData.id_rol },
+  //       },
         
+  //     },
+  //   });
+  
+  //   return updatedUser;
+  // },
+  async updateUser(id: number, userData: any, loggedUser: any) {
+    
+  console.log("Datos del usuario a actualizar:", userData);
+
+  const isAdmin = loggedUser.id_rol === 1; // 1 = administrador
+
+  // Encriptar contraseña si es enviada
+  if (userData.password) {
+    userData.password = await bcrypt.hash(userData.password, 10);
+  }
+
+  // Actualizar dirección si viene incluida
+  if (userData.direccion && userData.direccion.id_direccion) {
+    await prisma.direccion.update({
+      where: { id_direccion: userData.direccion.id_direccion },
+      data: {
+        calle: userData.direccion.calle,
+        nro_calle: userData.direccion.nro_calle,
+        cod_postal: userData.direccion.cod_postal,
+        id_localidad: userData.direccion.id_localidad,
       },
     });
-  
-    return updatedUser;
+  }
+
+  // Preparar objeto de actualización
+  const dataToUpdate: any = {
+    nombre: userData.nombre,
+    apellido: userData.apellido,
+    dni: userData.dni,
+    email: userData.email,
+    nro_celular: userData.nro_celular,
+    activo: userData.activo !== undefined ? userData.activo : true,
+  };
+
+  // Solo incluir password si está presente
+  if (userData.password) {
+    dataToUpdate.password = userData.password;
+  }
+
+  // Solo administrador puede cambiar el rol
+  if (isAdmin && userData.id_rol) {
+    dataToUpdate.rol = {
+      connect: { id_rol: userData.id_rol },
+    };
+  }
+
+  // Actualizar usuario
+  const updatedUser = await prisma.usuario.update({
+    where: { id_usuario: id },
+    data: dataToUpdate,
+    include: {
+      direccion: true,
+      rol: true,
+    },
+  });
+
+  return updatedUser;
   },
+  
   // En nuestro diagrama de secuencia: eliminar_usuario()
   async deleteUser(id: number) {
     return await prisma.usuario.update({
       where: { id_usuario: id },
-      data: { estado: false },
+      data: { activo: false },
     });
   },
   async activateUser(id: number) {
     return await prisma.usuario.update({
       where: { id_usuario: id },
-      data: { estado: true }, 
+      data: { activo: true }, 
     });
   },
 

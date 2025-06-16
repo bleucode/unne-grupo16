@@ -35,4 +35,4 @@ productRouter.delete(
   productController.delete
 );
 
-// export default productRouter;
+export default productRouter;
