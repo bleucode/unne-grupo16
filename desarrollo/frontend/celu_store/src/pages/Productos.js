@@ -62,6 +62,8 @@ function Productos() {
 
 
   const handleSave = async () => {
+    const token = localStorage.getItem('token');
+
     try {
       const payload = {
         nombre: selectedProducto.nombre || '',
@@ -87,10 +89,14 @@ function Productos() {
         : `http://localhost:4000/api/productos/${selectedProducto.id_producto}`;
 
       const method = addMode ? 'POST' : 'PUT';
-
+      
+      const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+      };
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify(payload)
       });
 
@@ -115,9 +121,13 @@ function Productos() {
 
   // Eliminar producto
   const handleDelete = async (id) => {
+    const token = localStorage.getItem('token');
+    const headers = {
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
     if (!window.confirm('¿Seguro que querés eliminar este producto?')) return;
     try {
-      await fetch(`http://localhost:4000/api/productos/${id}`, { method: 'DELETE' });
+      await fetch(`http://localhost:4000/api/productos/${id}`, { method: 'DELETE', headers });
       setProductos(productos.filter(p => p.id_producto !== id));
     } catch (error) {
       console.error('Error eliminando producto', error);

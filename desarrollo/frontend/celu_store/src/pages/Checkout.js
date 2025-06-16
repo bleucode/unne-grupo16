@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import '../pages/Carrito.css'; // Para mantener la misma estética
-import { useNavigate } from 'react-router-dom';
+import '../pages/Checkout.css'; // Para mantener la misma estética
+import { useNavigate, useLocation } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import StripeForm from '../pages/StripeCheckout.js'; // o '../components/StripeForm' según la carpeta
 
-function Checkout({ cartItems, clearCart }) {
+const stripePromise = loadStripe('pk_test_TU_PUBLIC_KEY_DE_STRIPE'); // poné tu clave pública de prueba
+
+
+function Checkout({  clearCart }) {
+  const location = useLocation();
+  const cartItems = location.state?.cartItems || [];
   const navigate = useNavigate();
   const discount = 40000;
   const subtotal = cartItems.reduce((acc, product) => 
@@ -21,7 +29,8 @@ function Checkout({ cartItems, clearCart }) {
     dni: '',
     email: '',
     nro_celular: '',
-    direccion: '',
+    calle: '',
+    nro_calle: ''
   });
 
   // Formulario datos pago
@@ -37,36 +46,48 @@ function Checkout({ cartItems, clearCart }) {
   const [mensaje, setMensaje] = useState('');
 
   useEffect(() => {
-    // Simulamos obtener usuario logueado con token
-    // En realidad, llamar a backend o usar contexto/estado global
-    
-    const token = localStorage.getItem('token');
-    if(token) {
-      // Simular fetch datos usuario
-      setTimeout(() => {
-        // Ejemplo:
-        setUser({
-          nombre: 'Juan',
-          apellido: 'Pérez',
-          dni: '12345678',
-          email: 'juan@mail.com',
-          nro_celular: '123456789',
-          direccion: 'Calle Falsa 123',
-        });
-        setForm({
-          nombre: 'Juan',
-          apellido: 'Pérez',
-          dni: '12345678',
-          email: 'juan@mail.com',
-          nro_celular: '123456789',
-          direccion: 'Calle Falsa 123',
-        });
+    const fetchUserData = async () => {
+        const token = localStorage.getItem('token');
+        console.log('Token guardado en localStorage:', localStorage.getItem('token'));
+        if (!token) {
         setLoadingUser(false);
-      }, 1000);
-    } else {
-      setLoadingUser(false);
-    }
-  }, []);
+        return;
+        }
+
+        try {
+        const response = await fetch('http://localhost:4000/api/user/me', {
+            method: 'GET',
+            headers: {
+            'Authorization': `Bearer ${token}`,
+            },
+        });
+        console.log('Response:', response);
+        if (!response.ok) {
+            throw new Error('Error al obtener el usuario');
+        }
+
+        const data = await response.json();
+
+        setUser(data);
+        console.log('Datos del usuario:', data);
+        setForm({
+            nombre: data.nombre || '',
+            apellido: data.apellido || '',
+            dni: data.dni || '',
+            email: data.email || '',
+            nro_celular: data.nro_celular || '',
+            calle: data.calle || '',
+            nro: data.nro_calle || ''
+        });
+        } catch (error) {
+        console.error('Error al obtener usuario:', error);
+        } finally {
+        setLoadingUser(false);
+        }
+    };
+
+    fetchUserData();
+    }, []);
 
   const handleInputChange = (e) => {
     setForm({...form, [e.target.name]: e.target.value});
@@ -123,8 +144,17 @@ function Checkout({ cartItems, clearCart }) {
             <label>Celular</label>
             <input name="nro_celular" value={form.nro_celular} onChange={handleInputChange} required />
 
-            <label>Dirección</label>
-            <input name="direccion" value={form.direccion} onChange={handleInputChange} required />
+             <label>Dirección</label>
+            <div className="address-group">
+                <div className="field">
+                <label htmlFor="calle">Calle</label>
+                <input type="text" id="calle" value={form.calle} name="calle" />
+                </div>
+                <div className="field">
+                <label htmlFor="nro">Nro</label>
+                <input type="text" id="nro" value={form.nro_calle} name="nro" />
+                </div>
+            </div>
 
             <h3>Método de Pago</h3>
             <div className="delivery-options" style={{marginBottom: '15px'}}>
@@ -138,14 +168,13 @@ function Checkout({ cartItems, clearCart }) {
 
             {payment.metodo === 'tarjeta' ? (
               <>
-                <label>Número de tarjeta</label>
-                <input name="tarjetaNumero" value={payment.tarjetaNumero} onChange={handlePaymentChange} required={payment.metodo === 'tarjeta'} />
-
-                <label>Vencimiento (MM/AA)</label>
-                <input name="tarjetaVto" value={payment.tarjetaVto} onChange={handlePaymentChange} required={payment.metodo === 'tarjeta'} />
-
-                <label>CVV</label>
-                <input name="tarjetaCVV" value={payment.tarjetaCVV} onChange={handlePaymentChange} required={payment.metodo === 'tarjeta'} />
+                <Elements stripe={stripePromise}>
+                <StripeForm amount={total} onSuccess={(paymentMethod) => {
+                    setMensaje('Pago realizado con Stripe (modo prueba).');
+                    clearCart();
+                    console.log('Pago exitoso', paymentMethod);
+                }} />
+                </Elements>
               </>
             ) : (
               <>

@@ -71,9 +71,9 @@ export const productController = {
         imagen,
         estado,
         id_modelo,
-        modelo,        // 🆕
+        modelo,        // 
         id_categoria,
-        categoria,     // 🆕
+        categoria,     // 
       } = req.body;
 
       const updatedProduct = await productService.update(id, {

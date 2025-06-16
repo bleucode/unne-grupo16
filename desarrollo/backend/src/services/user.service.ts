@@ -63,15 +63,11 @@ export const userService = {
   // Función para registrar al usuario
   // En nuestro diagrama de secuencia: Registrar_usuario()
   async registerUser(userData: any) {
-    console.log("Datos del usuario:", userData);
-    console.log("Password antes de hashear:", userData.password);  // Verifica la contraseña antes de hashearla
     if (!userData.direccion) {
       throw new Error('Datos de dirección faltantes');
     }
 
     const hashedPassword = userData.password;
-    console.log("Contraseña hasheada:", hashedPassword);  // Verifica el hash generado
-
     const direccion = await this.createDireccion(userData.direccion);
 
     // Aseguramos que el rol por defecto exista
@@ -121,7 +117,6 @@ export const userService = {
   },
 
   async updateUser(id: number, userData: any) {
-    console.log("Datos del usuario a actualizar:", userData);
   
     // Verificar si el rol "administrador" existe
     const adminRole = await prisma.rol.findUnique({

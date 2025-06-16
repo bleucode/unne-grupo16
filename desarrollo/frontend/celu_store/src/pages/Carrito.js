@@ -12,9 +12,8 @@ function Carrito({ cartItems, clearCart }) {
   const total = subtotal - discount;
 
   const handleCheckout = () => {
-    navigate('/checkout');
+    navigate('/checkout', { state: { cartItems } });
     
-    clearCart();
   };
 
   return (

@@ -1,0 +1,138 @@
+/* Checkout.css */
+
+.carrito-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.carrito-container h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.carrito-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+}
+
+.order-summary {
+  background: #f9f9f9;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
+  flex: 1;
+  min-width: 350px;
+}
+
+.order-summary h3 {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+  font-size: 1.3rem;
+}
+
+.order-summary label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+.order-summary input,
+.order-summary textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.delivery-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.delivery-options button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #007bff;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  font-weight: 500;
+}
+
+.delivery-selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.checkout-btn {
+  margin-top: 20px;
+  padding: 12px 20px;
+  width: 100%;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkout-btn:hover {
+  background-color: #218838;
+}
+
+.price-summary {
+  margin-top: 15px;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.price-summary .line {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.total {
+  margin-top: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+}
+
+.address-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.address-group .field {
+  flex: 1;
+}
+
+.address-group .field input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
