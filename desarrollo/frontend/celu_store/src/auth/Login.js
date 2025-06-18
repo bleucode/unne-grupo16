@@ -30,21 +30,24 @@ const handleSubmit = async (e) => {
     localStorage.setItem('token', data.token)
 
     console.log(localStorage.getItem('token'));
-    // if (response.ok) {
-    //   console.log('Guardando token:', data.token);
-    //   localStorage.setItem('token', data.token);
+    if (response.ok) {
+      console.log('Guardando token:', data.token);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-    //   // Redireccionar según el rol
-    //   if (data.user.id_rol === 1) {
-    //     window.location.href = '/';
-    //   } else if (data.user.id_rol === 2) {
-    //     window.location.href = '/admin';
-    //   } else {
-    //     window.location.href = '/';
-    //   }
-    // } else {
-    //   setError(data.error);
-    // }
+      if (data.user.id_rol === 1) {
+        window.location.href = '/';
+      } else if (data.user.id_rol === 3) { // administrador
+        window.location.href = '/admin?section=usuarios';
+      } else if (data.user.id_rol === 2) { // vendedor
+        window.location.href = '/admin?section=ventas';
+      } else {
+        window.location.href = '/';
+      }
+    } else {
+      setError(data.error);
+    }
+
   } catch (error) {
     console.error('Error en el login:', error);
     setError('Ocurrió un error al intentar iniciar sesión.');

@@ -3,16 +3,43 @@ import './Productos.css';
 
 function Productos() {
   const [productos, setProductos] = useState([]);
+  const [marcas, setMarcas] = useState([]);
+  const [modelos, setModelos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
 
   const fetchProductos = () => {
-    fetch('http://localhost:4000/api/productos')
+    fetch('http://localhost:4000/api/products')
       .then(res => res.json())
       .then(data => setProductos(data))
       .catch(err => console.error('Error al obtener productos', err));
   };
 
+  const fetchMarcas = () => {
+    fetch('http://localhost:4000/api/products/marcas')
+      .then(res => res.json())
+      .then(data => setMarcas(data))
+      .catch(err => console.error('Error al obtener marcas', err));
+  };
+  
+  const fetchModelos = () => {
+    fetch('http://localhost:4000/api/products/modelos')
+      .then(res => res.json())
+      .then(data => setModelos(data))
+      .catch(err => console.error('Error al obtener modelos', err));
+  };
+
+  const fetchCategorias = () => {
+    fetch('http://localhost:4000/api/products/categorias')
+      .then(res => res.json())
+      .then(data => setCategorias(data))
+      .catch(err => console.error('Error al obtener categorías', err));
+  };
+
   useEffect(() => {
     fetchProductos();
+    fetchMarcas();
+    fetchModelos();
+    fetchCategorias();
   }, []);
 
   const [search, setSearch] = useState('');
@@ -21,7 +48,7 @@ function Productos() {
   const [addMode, setAddMode] = useState(false);
 
   const filteredProductos = productos.filter(prod =>
-    `${prod.nombre} ${prod.categoria.nombre}`.toLowerCase().includes(search.toLowerCase())
+    `${prod.nombre} ${prod.categoria?.nombre || ''}`.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleView = (prod) => {
@@ -42,24 +69,26 @@ function Productos() {
       descripcion: '',
       especificacion: '',
       precio: '',
+      precio_descuento: '', 
       stock: '',
       imagen: '',
       estado: true,
       modelo: {
+        id_modelo: null,
         descripcion: '',
         marca: {
-          descripcion: ''
+          id_marca: null,
+          nombre: ''
         }
       },
       categoria: {
+        id_categoria: null,
         nombre: ''
       }
     });
     setAddMode(true);
     setEditMode(false);
   };
-
-
 
   const handleSave = async () => {
     const token = localStorage.getItem('token');
@@ -70,39 +99,33 @@ function Productos() {
         descripcion: selectedProducto.descripcion || '',
         especificacion: selectedProducto.especificacion || '',
         precio: Number(selectedProducto.precio) || 0,
+        precio_descuento: Number(selectedProducto.precio_descuento) || 0,  
         stock: parseInt(selectedProducto.stock) || 0,
         imagen: selectedProducto.imagen || '',
         estado: selectedProducto.estado !== undefined ? selectedProducto.estado : true,
-        modelo: selectedProducto.modelo?.descripcion && selectedProducto.modelo?.marca?.descripcion
-        ? {
-            descripcion: selectedProducto.modelo.descripcion,
-            marca: {
-              descripcion: selectedProducto.modelo.marca.descripcion,
-            },
-          }
-        : undefined,
-        categoria: { nombre: selectedProducto.categoria?.nombre || 'Default Categoria' }
+        id_modelo: Number(selectedProducto.id_modelo) || null,
+        id_marca: Number(selectedProducto.id_marca) || null,
+        id_categoria: Number(selectedProducto.id_categoria) || null,
       };
 
       const url = addMode
-        ? 'http://localhost:4000/api/productos'
-        : `http://localhost:4000/api/productos/${selectedProducto.id_producto}`;
+        ? 'http://localhost:4000/api/products'
+        : `http://localhost:4000/api/products/${selectedProducto.id_producto}`;
 
       const method = addMode ? 'POST' : 'PUT';
-      
+
       const headers = {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
       };
+
       const response = await fetch(url, {
         method,
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
 
-      if (!response.ok) {
-        throw new Error('Error al guardar el producto');
-      }
+      if (!response.ok) throw new Error('Error al guardar el producto');
 
       const savedProduct = await response.json();
       if (addMode) {
@@ -118,8 +141,6 @@ function Productos() {
     }
   };
 
-
-  // Eliminar producto
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
     const headers = {
@@ -127,7 +148,7 @@ function Productos() {
     };
     if (!window.confirm('¿Seguro que querés eliminar este producto?')) return;
     try {
-      await fetch(`http://localhost:4000/api/productos/${id}`, { method: 'DELETE', headers });
+      await fetch(`http://localhost:4000/api/products/${id}`, { method: 'DELETE', headers });
       setProductos(productos.filter(p => p.id_producto !== id));
     } catch (error) {
       console.error('Error eliminando producto', error);
@@ -196,6 +217,7 @@ function Productos() {
                 disabled={!editMode && !addMode}
                 required
               />
+
               <label>Precio:</label>
               <input
                 type="number"
@@ -204,6 +226,16 @@ function Productos() {
                 disabled={!editMode && !addMode}
                 required
               />
+
+              <label>Precio Descuento:</label> 
+              <input
+                type="number"
+                value={selectedProducto.precio_descuento || ''}
+                onChange={(e) => setSelectedProducto({ ...selectedProducto, precio_descuento: parseFloat(e.target.value) })}
+                disabled={!editMode && !addMode}
+                required
+              />
+
               <label>Stock:</label>
               <input
                 type="number"
@@ -212,42 +244,48 @@ function Productos() {
                 disabled={!editMode && !addMode}
                 required
               />
+
               <label>Marca:</label>
-              <input
-                type="text"
-                value={selectedProducto.modelo?.marca?.descripcion || ''}
-                onChange={(e) => setSelectedProducto({
-                  ...selectedProducto,
-                  modelo: {
-                    ...(selectedProducto.modelo || {}),
-                    marca: { descripcion: e.target.value }
-                  }
-                })}
-              />
+              <select
+                value={selectedProducto.id_marca || ''}
+                onChange={(e) => setSelectedProducto({ ...selectedProducto, id_marca: Number(e.target.value) })}
+                disabled={!editMode && !addMode}
+              >
+                <option value="">Seleccionar marca</option>
+                {marcas.map(m => (
+                  <option key={m.id_marca} value={m.id_marca}>
+                    {m.nombre}
+                  </option>
+                ))}
+              </select>
 
               <label>Modelo:</label>
-              <input
-                type="text"
-                value={selectedProducto.modelo?.descripcion || ''}
-                onChange={(e) => setSelectedProducto({
-                  ...selectedProducto,
-                  modelo: {
-                    ...(selectedProducto.modelo || {}),
-                    descripcion: e.target.value,
-                    marca: selectedProducto.modelo?.marca || {}
-                  }
-                })}
-              />
+              <select
+                value={selectedProducto.id_modelo || ''}
+                onChange={(e) => setSelectedProducto({ ...selectedProducto, id_modelo: Number(e.target.value) })}
+                disabled={!editMode && !addMode}
+              >
+                <option value="">Seleccionar modelo</option>
+                {modelos.map(m => (
+                  <option key={m.id_modelo} value={m.id_modelo}>
+                    {m.descripcion}
+                  </option>
+                ))}
+              </select>
 
               <label>Categoría:</label>
-              <input
-                type="text"
-                value={selectedProducto.categoria?.nombre || ''}
-                onChange={(e) => setSelectedProducto({
-                  ...selectedProducto,
-                  categoria: { nombre: e.target.value }
-                })}
-              />
+              <select
+                value={selectedProducto.id_categoria || ''}
+                onChange={(e) => setSelectedProducto({ ...selectedProducto, id_categoria: Number(e.target.value) })}
+                disabled={!editMode && !addMode}
+              >
+                <option value="">Seleccionar categoría</option>
+                {categorias.map(c => (
+                  <option key={c.id_categoria} value={c.id_categoria}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
 
 
               {(editMode || addMode) && <button type="submit" className="save-btn">Guardar</button>}

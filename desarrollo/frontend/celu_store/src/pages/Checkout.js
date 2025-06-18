@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import '../pages/Checkout.css'; // Para mantener la misma estética
+import '../pages/Checkout.css'; 
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import StripeForm from '../pages/StripeCheckout.js'; // o '../components/StripeForm' según la carpeta
+import StripeForm from '../pages/StripeCheckout.js';
 
 const stripePromise = loadStripe('pk_test_TU_PUBLIC_KEY_DE_STRIPE'); // poné tu clave pública de prueba
 
@@ -12,11 +13,43 @@ function Checkout({  clearCart }) {
   const location = useLocation();
   const cartItems = location.state?.cartItems || [];
   const navigate = useNavigate();
-  const discount = 40000;
-  const subtotal = cartItems.reduce((acc, product) => 
-    acc + ((product.priceOffer || product.price) * product.quantity), 0
-  );
-  const total = subtotal - discount;
+  const [productDetails, setProductDetails] = useState({});
+
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      const details = {};
+
+      await Promise.all(cartItems.map(async (item) => {
+        try {
+          const res = await axios.get(`http://localhost:4000/api/products/${item.id}`);
+          details[item.id] = res.data;
+        } catch (err) {
+          console.error(`Error al obtener producto ${item.id}`, err);
+        }
+      }));
+
+      setProductDetails(details);
+    };
+
+    if (cartItems.length > 0) {
+      fetchProductDetails();
+    }
+  }, [cartItems]);
+
+  const subtotal = cartItems.reduce((acc, item) => {
+    const product = productDetails[item.id];
+    const price = product?.precio_descuento ?? product?.precio ?? item.price ?? 0;
+    return acc + price * item.quantity;
+  }, 0);
+
+  const totalSinDescuento = cartItems.reduce((acc, item) => {
+    const product = productDetails[item.id];
+    const price = product?.precio ?? item.price ?? 0;
+    return acc + price * item.quantity;
+  }, 0);
+
+  const totalDescuento = totalSinDescuento - subtotal;
+  const total = subtotal;
 
   // Simulación de obtener usuario de token
   const [user, setUser] = useState(null); // null si no está logueado
@@ -44,11 +77,16 @@ function Checkout({  clearCart }) {
 
   const [procesando, setProcesando] = useState(false);
   const [mensaje, setMensaje] = useState('');
+  const [metodosPago, setMetodosPago] = useState([]);
+  const [cuotas, setCuotas] = useState([]);
+  const [selectedMetodoPago, setSelectedMetodoPago] = useState(null);
+  const [selectedCuotaId, setSelectedCuotaId] = useState('');
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
         const token = localStorage.getItem('token');
-        console.log('Token guardado en localStorage:', localStorage.getItem('token'));
         if (!token) {
         setLoadingUser(false);
         return;
@@ -61,7 +99,7 @@ function Checkout({  clearCart }) {
             'Authorization': `Bearer ${token}`,
             },
         });
-        console.log('Response:', response);
+
         if (!response.ok) {
             throw new Error('Error al obtener el usuario');
         }
@@ -69,7 +107,6 @@ function Checkout({  clearCart }) {
         const data = await response.json();
 
         setUser(data);
-        console.log('Datos del usuario:', data);
         setForm({
             nombre: data.nombre || '',
             apellido: data.apellido || '',
@@ -77,7 +114,8 @@ function Checkout({  clearCart }) {
             email: data.email || '',
             nro_celular: data.nro_celular || '',
             calle: data.calle || '',
-            nro: data.nro_calle || ''
+            nro: data.nro_calle || '',
+            id_direccion: data.id_direccion || ''
         });
         } catch (error) {
         console.error('Error al obtener usuario:', error);
@@ -89,6 +127,23 @@ function Checkout({  clearCart }) {
     fetchUserData();
     }, []);
 
+  useEffect(() => {
+    const fetchOpcionesPago = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/ventas/opcionesPago');
+        const data = await response.json();
+
+        // Acceder correctamente a cada parte del objeto
+        setMetodosPago(data.metodosPago);
+        setCuotas(data.cuotas);
+      } catch (error) {
+        console.error('Error al cargar opciones de pago:', error);
+      }
+    };
+
+    fetchOpcionesPago();
+  }, []);
+
   const handleInputChange = (e) => {
     setForm({...form, [e.target.name]: e.target.value});
   };
@@ -98,24 +153,79 @@ function Checkout({  clearCart }) {
   };
 
   const handleMetodoChange = (metodo) => {
-    setPayment({...payment, metodo});
+    const cuotasMetodo = cuotas.filter(c => c.id_metodo_pago === metodo.id_metodo_pago);
+    const metodoPagoString = metodo.nombre.toLowerCase().includes('tarjeta') ? 'tarjeta' : metodo.nombre.toLowerCase();
+
+    setSelectedMetodoPago(metodo);
+    setPayment({
+        ...payment,
+        metodo: metodoPagoString,
+        idMetodoPago: metodo.id_metodo_pago,
+        cuotasDisponibles: cuotasMetodo,
+        tipoTarjeta: ''  // reseteamos tipoTarjeta al cambiar método
+      });
+
+    setSelectedCuotaId('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setProcesando(true);
     setMensaje('');
 
-    // Validar datos mínimos, luego simular envío a backend
-    // Aquí podrías enviar datos de usuario + pago + carrito
-
-    setTimeout(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
       setProcesando(false);
+      setMensaje('Debes estar logueado para realizar la compra.');
+      return;
+    }
+
+    if (!user?.id || !payment.idMetodoPago || !form.id_direccion) {
+      setProcesando(false);
+      setMensaje('Faltan datos requeridos para completar la compra.');
+      return;
+    }
+
+    const payload = {
+      clienteId: user.id,
+      idMetodoPago: payment.idMetodoPago,
+      direccionEnvioId: form.id_direccion,
+      items: cartItems.map(item => ({
+        productoId: item.id,
+        cantidad: item.quantity
+      })),
+      total,
+      detalleTransferencia: payment.metodo === 'transferencia' ? payment.transferenciaDetalle : undefined
+    };
+
+
+    try {
+      const response = await fetch('http://localhost:4000/api/ventas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Error al procesar la compra');
+      }
+
       setMensaje('Compra realizada con éxito. Gracias por tu compra!');
       clearCart();
-      // Opcional: redirigir a página de gracias o historial
-      // navigate('/gracias');
-    }, 2000);
+      navigate(`/factura/${data.id_venta}`);
+    } catch (error) {
+      setMensaje('Ocurrió un error al procesar la compra.');
+      setErrorMsg(error.message || 'Hubo un error desconocido.');
+      setShowErrorModal(true);
+    } finally {
+      setProcesando(false);
+    }
   };
 
   if(loadingUser) return <p>Cargando datos...</p>;
@@ -152,37 +262,90 @@ function Checkout({  clearCart }) {
                 </div>
                 <div className="field">
                 <label htmlFor="nro">Nro</label>
-                <input type="text" id="nro" value={form.nro_calle} name="nro" />
+                <input type="text" id="nro" value={form.nro} name="nro" />
                 </div>
             </div>
+            <input type="hidden" name="id_direccion" value={form.id_direccion} />
 
             <h3>Método de Pago</h3>
+            
             <div className="delivery-options" style={{marginBottom: '15px'}}>
-              <button type="button" className={payment.metodo === 'tarjeta' ? 'delivery-selected' : ''} onClick={() => handleMetodoChange('tarjeta')}>
-                Tarjeta Débito/Crédito
-              </button>
-              <button type="button" className={payment.metodo === 'transferencia' ? 'delivery-selected' : ''} onClick={() => handleMetodoChange('transferencia')}>
-                Transferencia Bancaria
-              </button>
-            </div>
+            {metodosPago.map(metodo => {
+              const nombreMostrar = metodo.nombre === 'Tarjeta de crédito Stripe'
+                ? 'Tarjeta de crédito'
+                : metodo.nombre === 'Tarjeta de débito Stripe'
+                ? 'Tarjeta de débito'
+                : metodo.nombre;
 
-            {payment.metodo === 'tarjeta' ? (
-              <>
-                <Elements stripe={stripePromise}>
-                <StripeForm amount={total} onSuccess={(paymentMethod) => {
+              return (
+                <button
+                  key={metodo.id}
+                  type="button"
+                  className={selectedMetodoPago?.id === metodo.id ? 'delivery-selected' : ''}
+                  onClick={() => handleMetodoChange(metodo)}
+                >
+                  {nombreMostrar}
+                </button>
+              );
+            })}
+          </div>
+
+          {payment.metodo === 'tarjeta' && (
+            <>
+              <label>Tipo de tarjeta</label>
+              <select name="tipoTarjeta" value={payment.tipoTarjeta || ''} onChange={handlePaymentChange} required>
+                <option value="">Seleccioná una opción</option>
+                <option value="credito">Crédito</option>
+                <option value="debito">Débito</option>
+              </select>
+
+              <Elements stripe={stripePromise}>
+                <StripeForm
+                  amount={total}
+                  onSuccess={(paymentMethod) => {
                     setMensaje('Pago realizado con Stripe (modo prueba).');
                     clearCart();
-                    console.log('Pago exitoso', paymentMethod);
-                }} />
-                </Elements>
-              </>
-            ) : (
-              <>
-                <label>Detalle de transferencia</label>
-                <textarea name="transferenciaDetalle" value={payment.transferenciaDetalle} onChange={handlePaymentChange} required={payment.metodo === 'transferencia'} />
-              </>
-            )}
+                  }}
+                  metadata={{
+                    metodo: selectedMetodoPago?.nombre,
+                    tipo: payment.tipoTarjeta,
+                    usuarioEmail: form.email,
+                    nombreCompleto: `${form.nombre} ${form.apellido}`,
+                    idMetodoPago: selectedMetodoPago?.id_metodo_pago,
+                    direccionEnvioId: form.id_direccion,
+                    cuotaId: selectedCuotaId,
+                    items: JSON.stringify(cartItems.map(item => ({
+                      id: item.id,
+                      cantidad: item.quantity
+                    }))),
+                    clienteId: user?.id
+                  }}
+                />
 
+                {/* Mostrar cuotas sólo si tipoTarjeta es crédito */}
+                {payment.tipoTarjeta === 'credito' && cuotas.length > 0 && (
+                  <div>
+                    <label>Seleccioná cantidad de cuotas</label>
+                    <select
+                    value={selectedCuotaId}
+                    onChange={(e) => setSelectedCuotaId(e.target.value)}
+                    required
+                  >
+                    <option value="">Elegí una opción</option>
+                    {cuotas
+                      .filter(cuota => cuota.id_metodo_pago === selectedMetodoPago?.id_metodo_pago)
+                      .map(cuota => (
+                        <option key={cuota.id_cuota} value={cuota.id_cuota}>
+                          {cuota.numero_cuota} cuotas - {cuota.interes_cuota}% interés
+                        </option>
+                      ))
+                    }
+                  </select>
+                  </div>
+                )}
+              </Elements>
+            </>
+          )}
             <button type="submit" className="checkout-btn" disabled={procesando}>
               {procesando ? 'Procesando...' : 'Confirmar Compra'}
             </button>
@@ -214,7 +377,7 @@ function Checkout({  clearCart }) {
             </div>
             <div className="line">
               <span>Descuentos:</span>
-              <span>-${discount.toLocaleString()}</span>
+              <span>-${totalDescuento.toLocaleString()}</span>
             </div>
           </div>
 
@@ -223,7 +386,19 @@ function Checkout({  clearCart }) {
           </div>
         </div>
       </div>
+      {showErrorModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Error en la compra</h3>
+            <p>{errorMsg}</p>
+            <button onClick={() => setShowErrorModal(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
+
+
     </div>
+    
   );
 }
 

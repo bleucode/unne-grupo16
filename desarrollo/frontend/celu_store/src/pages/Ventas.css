@@ -1,0 +1,92 @@
+.ventas-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.ventas-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.ventas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.venta-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  transition: transform 0.2s;
+}
+
+.venta-card:hover {
+  transform: scale(1.02);
+}
+
+.venta-card p {
+  margin: 8px 0;
+}
+
+.tracking-group {
+  margin-top: 12px;
+}
+
+.tracking-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.tracking-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.mensaje {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 15px;
+  border: 1px solid #c3e6cb;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+  .ventas-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  }
+  
+  .ventas-table th, .ventas-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .ventas-table th {
+    background-color: #dc2626;
+    color: white;
+  }
+  
+  .ventas-table td button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    background: #dc2626;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
