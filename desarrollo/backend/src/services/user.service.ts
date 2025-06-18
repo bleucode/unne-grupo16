@@ -186,61 +186,67 @@ export const userService = {
   // },
   async updateUser(id: number, userData: any, loggedUser: any) {
     
-  console.log("Datos del usuario a actualizar:", userData);
+    if (!loggedUser || typeof loggedUser.id_rol !== 'number') {
+      throw new Error("Usuario autenticado inválido o no tiene id_rol.");
+    }
 
-  const isAdmin = loggedUser.id_rol === 1; // 1 = administrador
+    const isAdmin = loggedUser.id_rol === 3; // 3 = administrador (según tu tabla)
 
-  // Encriptar contraseña si es enviada
-  if (userData.password) {
-    userData.password = await bcrypt.hash(userData.password, 10);
-  }
+    if (!isAdmin) {
+      throw new Error("No tiene permisos para actualizar usuarios.");
+    }
 
-  // Actualizar dirección si viene incluida
-  if (userData.direccion && userData.direccion.id_direccion) {
-    await prisma.direccion.update({
-      where: { id_direccion: userData.direccion.id_direccion },
-      data: {
-        calle: userData.direccion.calle,
-        nro_calle: userData.direccion.nro_calle,
-        cod_postal: userData.direccion.cod_postal,
-        id_localidad: userData.direccion.id_localidad,
+    // Encriptar contraseña si es enviada
+    if (userData.password) {
+      userData.password = await bcrypt.hash(userData.password, 10);
+    }
+
+    // Actualizar dirección si viene incluida
+    if (userData.direccion && userData.direccion.id_direccion) {
+      await prisma.direccion.update({
+        where: { id_direccion: userData.direccion.id_direccion },
+        data: {
+          calle: userData.direccion.calle,
+          nro_calle: userData.direccion.nro_calle,
+          cod_postal: userData.direccion.cod_postal,
+          id_localidad: userData.direccion.id_localidad,
+        },
+      });
+    }
+
+    // Preparar objeto de actualización
+    const dataToUpdate: any = {
+      nombre: userData.nombre,
+      apellido: userData.apellido,
+      dni: userData.dni,
+      email: userData.email,
+      nro_celular: userData.nro_celular,
+      activo: userData.activo !== undefined ? userData.activo : true,
+    };
+
+    // Solo incluir password si está presente
+    if (userData.password) {
+      dataToUpdate.password = userData.password;
+    }
+
+    // Solo administrador puede cambiar el rol
+    if (isAdmin && userData.id_rol) {
+      dataToUpdate.rol = {
+        connect: { id_rol: userData.id_rol },
+      };
+    }
+
+    // Actualizar usuario
+    const updatedUser = await prisma.usuario.update({
+      where: { id_usuario: id },
+      data: dataToUpdate,
+      include: {
+        direccion: true,
+        rol: true,
       },
     });
-  }
 
-  // Preparar objeto de actualización
-  const dataToUpdate: any = {
-    nombre: userData.nombre,
-    apellido: userData.apellido,
-    dni: userData.dni,
-    email: userData.email,
-    nro_celular: userData.nro_celular,
-    activo: userData.activo !== undefined ? userData.activo : true,
-  };
-
-  // Solo incluir password si está presente
-  if (userData.password) {
-    dataToUpdate.password = userData.password;
-  }
-
-  // Solo administrador puede cambiar el rol
-  if (isAdmin && userData.id_rol) {
-    dataToUpdate.rol = {
-      connect: { id_rol: userData.id_rol },
-    };
-  }
-
-  // Actualizar usuario
-  const updatedUser = await prisma.usuario.update({
-    where: { id_usuario: id },
-    data: dataToUpdate,
-    include: {
-      direccion: true,
-      rol: true,
-    },
-  });
-
-  return updatedUser;
+    return updatedUser;
   },
   
   // En nuestro diagrama de secuencia: eliminar_usuario()

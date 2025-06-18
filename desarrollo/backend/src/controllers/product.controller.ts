@@ -114,4 +114,31 @@ export const productController = {
       res.status(500).json({ message: 'Error al eliminar el producto', error });
     }
   }) as RequestHandler,
+
+  getAllMarcas: (async (req: Request, res: Response) => {
+    try {
+      const brands = await productService.getMarcas();
+      res.json(brands);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener marcas', error });
+    }
+  }) as RequestHandler,
+
+  getAllModelos: (async (req: Request, res: Response) => {
+    try {
+      const models = await productService.getModelos();
+      res.json(models);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener modelos', error });
+    }
+  }) as RequestHandler,
+
+  getAllCategorias: (async (req: Request, res: Response) => {
+    try {
+      const categories = await productService.getCategorias();
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener categorías', error });
+    }
+  }) as RequestHandler,
 };

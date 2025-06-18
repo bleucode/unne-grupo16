@@ -49,9 +49,6 @@ export const userController = {
       const id = parseInt(req.params.id);
       // Obtener el usuario autenticado(estoa pra saer si es admin o no para acutlaizar el rol)
       const loggedUser = (req as any).user;
-      console.log('req.user:', (req as any).user);
-      console.log('req.body:', req.body);
-
       const data = validadorUsuario.actualizar.parse(req.body);
       const updatedUser = await userService.updateUser(id, data,loggedUser);
       res.json(updatedUser);
@@ -76,7 +73,7 @@ export const userController = {
   },
 
   getAddressById: async (req: Request, res: Response) => {
-    console.log('Parámetro id recibido en /address/:id =>', req.params.id);
+
     try {
       const id = parseInt(req.params.id, 10); // Convertir ID a número
       if (isNaN(id)) {
@@ -100,7 +97,7 @@ export const userController = {
   getMe: async (req: Request, res: Response): Promise<void> => {
     try {
       const userJwtData = (req as any).user;
-      const userId = userJwtData?.id_usuario;
+      const userId = userJwtData?.id;
 
       if (!userId) {
         res.status(401).json({ error: 'No autorizado' });
@@ -114,9 +111,6 @@ export const userController = {
         return;
       }
 
-      console.log('Usuario completo:', user);
-      console.log('ID dirección:', user.id_direccion);
-
       const direccionId = user.id_direccion;
 
       if (typeof direccionId !== 'number' || isNaN(direccionId)) {
@@ -125,15 +119,17 @@ export const userController = {
       }
 
       const direccion = await userService.getAddressById(direccionId);
-      console.log('Dirección obtenida:', direccion);
+
       res.status(200).json({
         id: user.id_usuario,
         nombre: user.nombre,
+        apellido: user.apellido,
         email: user.email,
         dni: user.dni,
         nro_celular: user.nro_celular,
         calle: direccion?.calle,
         nro_calle: direccion?.nro_calle,
+        id_direccion: direccion?.id_direccion,
       });
 
     } catch (error) {

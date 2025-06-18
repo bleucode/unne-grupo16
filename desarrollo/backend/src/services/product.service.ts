@@ -276,4 +276,23 @@ export const productService = {
       data: { activo: false }, // baja lógica
     });
   },
+
+
+  getMarcas: () => {
+    return  prisma.marca.findMany({
+      orderBy: { id_marca: 'asc' },
+    });
+  },
+
+  getModelos: () => {
+    return  prisma.modelo.findMany({
+      orderBy: { id_modelo: 'asc' },
+    });
+  },
+
+  getCategorias: () => {
+    return  prisma.categoria.findMany({
+      orderBy: { id_categoria: 'asc' },
+    });
+  },
 };

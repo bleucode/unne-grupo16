@@ -28,7 +28,7 @@ export const ventaService = {
       }
       //  Calcular total y actualizar stock
       let total = 0;
-      for (const { productoId, cantidad } of payload.items) {
+      for (const { productoId, cantidad} of payload.items) {
         const prod = await tx.producto.findUnique({
           where: { id_producto: productoId },
         });
@@ -37,7 +37,7 @@ export const ventaService = {
         }
         if (prod.stock < cantidad) {
           throw new Error(
-            `Stock insuficiente para producto ${productoId}`
+            `No hay stock para el producto ${prod.nombre}`
           );
         }
         total += prod.precio_descuento * cantidad;
@@ -122,4 +122,37 @@ export const ventaService = {
   //     data: { estado_envio: estado },
   //   });
   // },
+
+  async createVentaFromPaymentIntent(paymentIntent: any, extraData: {
+      clienteId: number;
+      idMetodoPago: number;
+      direccionEnvioId: number;
+      items: { productoId: number; cantidad: number }[];
+      cuotaId?: number;
+    }) {
+      if (paymentIntent.status !== 'succeeded') {
+        throw new Error('Payment Intent no confirmado');
+      }
+      return this.createVenta({
+        clienteId: extraData.clienteId,
+        idMetodoPago: extraData.idMetodoPago,
+        direccionEnvioId: extraData.direccionEnvioId,
+        items: extraData.items,
+        cuotaId: extraData.cuotaId,
+      });
+    },
+
+  async getOpcionesPago() {
+    const categorias = await prisma.categoriaPago.findMany();
+
+    const metodosPago = await prisma.metodoPago.findMany({
+      include: {
+        categoriaPago: true,
+      },
+    });
+
+    const cuotas = await prisma.cuota.findMany();
+
+    return { categorias, metodosPago, cuotas };
+  },
 };
