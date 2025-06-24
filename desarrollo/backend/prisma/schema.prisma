@@ -11,8 +11,9 @@ model Provincia {
   id_provincia Int        @id @default(autoincrement())
   nombre       String     @unique
   localidades  Localidad[]
-}
 
+  @@map("Provincia")
+}
 
 model Localidad {
   id_localidad Int      @id @default(autoincrement())
@@ -20,7 +21,9 @@ model Localidad {
   id_provincia Int
   provincia    Provincia @relation(fields: [id_provincia], references: [id_provincia])
   direcciones  Direccion[]
+
   @@unique([nombre, id_provincia], name: "localidad_unique")
+  @@map("Localidad")
 }
 
 model Direccion {
@@ -31,74 +34,76 @@ model Direccion {
   id_localidad Int
   localidad    Localidad @relation(fields: [id_localidad], references: [id_localidad])
   usuarios     Usuario[]
+
+  @@map("Direccion")
 }
 
 model Envio {
-  id_envio       Int      @id @default(autoincrement())
-  fecha_envio    DateTime
-  estado_envio   String
-  cod_seguimiento String? //es opcional porque el codigo de envio se puede otorga mas adelante cuando se deposita en el correo
+  id_envio        Int      @id @default(autoincrement())
+  fecha_envio     DateTime
+  estado_envio    String
+  cod_seguimiento String?
+  id_venta        Int      @unique
+  venta           Venta    @relation("VentaEnvio", fields: [id_venta], references: [id_venta])
 
-  // FK y PK opcionalmente
-  id_venta       Int      @unique
-  venta          Venta    @relation("VentaEnvio", fields: [id_venta], references: [id_venta])
+  @@map("Envio")
 }
 
 model VentaDetalle {
-  id_venta_detalle Int    @id @default(autoincrement())
+  id_venta_detalle Int      @id @default(autoincrement())
   cantidad         Int
   precio           Float
   id_venta         Int
   id_producto      Int
   venta            Venta     @relation(fields: [id_venta], references: [id_venta])
   producto         Producto  @relation(fields: [id_producto], references: [id_producto])
+
+  @@map("VentaDetalle")
 }
 
-//model TipoPago{
- // id_tipo_pago  Int             @id @default(autoincrement())
- // metodo        String
- // descripcion   String
-  //ventas       Venta[]
-//}
-
 model CategoriaPago {
-  id_categoria_pago   Int             @id @default(autoincrement())
-  nombre         String          // "billetera_virtual" | "debito" | "credito"
-  descripcion    String?
-  metodos        MetodoPago[]    // relación 1‑N
+  id_categoria_pago Int         @id @default(autoincrement())
+  nombre            String
+  descripcion       String?
+  metodos           MetodoPago[]
+
+  @@map("CategoriaPago")
 }
 
 model MetodoPago {
-  id_metodo_pago      Int             @id @default(autoincrement())
-  nombre         String          // "MercadoPago", "Visa", "Maestro", etc.
-  id_categoria_pago   Int
-  categoriaPago      CategoriaPago   @relation(fields: [id_categoria_pago], references: [id_categoria_pago])
-  cuotas         Cuota[]         // sólo si categoría = crédito o débito con cuotas
-  ventas       Venta[]
-  //  para billetera virtual no habrá filas aquí
+  id_metodo_pago    Int           @id @default(autoincrement())
+  nombre            String
+  id_categoria_pago Int
+  categoriaPago     CategoriaPago @relation(fields: [id_categoria_pago], references: [id_categoria_pago])
+  cuotas            Cuota[]
+  ventas            Venta[]
+
+  @@map("MetodoPago")
 }
 
 model Cuota {
-  id_cuota       Int             @id @default(autoincrement())
-  id_metodo_pago      Int
-  numero_cuota         Int             // 1, 3, 6, 12…
-  interes_cuota       Float?          // porcentaje de interés (0 para sin interés)
-  metodoPago     MetodoPago      @relation(fields: [id_metodo_pago], references: [id_metodo_pago])
+  id_cuota        Int        @id @default(autoincrement())
+  id_metodo_pago  Int
+  numero_cuota    Int
+  interes_cuota   Float?
+  metodoPago      MetodoPago @relation(fields: [id_metodo_pago], references: [id_metodo_pago])
+
+  @@map("Cuota")
 }
 
 model Venta {
-  id_venta      Int            @id @default(autoincrement())
-  fecha_venta   DateTime
-  total_venta   Float
-  id_cliente    Int
+  id_venta        Int            @id @default(autoincrement())
+  fecha_venta     DateTime
+  total_venta     Float
+  id_cliente      Int
   id_metodo_pago  Int
-         
-  usuario       Usuario        @relation(fields: [id_cliente], references: [id_usuario])
-  metodoPago      MetodoPago       @relation(fields: [id_metodo_pago], references: [id_metodo_pago])
-  envio         Envio?          @relation("VentaEnvio")       // Obligatorio - toda venta tiene envío
-  ventaDetalles VentaDetalle[]
-}
+  usuario         Usuario        @relation(fields: [id_cliente], references: [id_usuario])
+  metodoPago      MetodoPago     @relation(fields: [id_metodo_pago], references: [id_metodo_pago])
+  envio           Envio?         @relation("VentaEnvio")
+  ventaDetalles   VentaDetalle[]
 
+  @@map("Venta")
+}
 
 model Usuario {
   id_usuario     Int       @id @default(autoincrement())
@@ -115,47 +120,59 @@ model Usuario {
   direccion      Direccion @relation(fields: [id_direccion], references: [id_direccion])
   rol            Rol       @relation(fields: [id_rol], references: [id_rol])
   ventas         Venta[]
+
+  @@map("Usuario")
 }
 
 model Rol {
-  id_rol    Int       @id @default(autoincrement())
+  id_rol     Int       @id @default(autoincrement())
   nombre_rol String
-  usuarios  Usuario[]
+  usuarios   Usuario[]
+
+  @@map("Rol")
 }
 
 model Producto {
-  id_producto    Int       @id @default(autoincrement())
-  nombre         String
-  descripcion    String
-  especificacion String
-  precio         Float
+  id_producto      Int       @id @default(autoincrement())
+  nombre           String
+  descripcion      String
+  especificacion   String
+  precio           Float
   precio_descuento Float
-  stock          Int
-  imagen         String
-  activo         Boolean
-  id_modelo      Int
-  id_categoria   Int
-  id_marca       Int
-  modelo         Modelo    @relation(fields: [id_modelo], references: [id_modelo])
-  categoria      Categoria @relation(fields: [id_categoria], references: [id_categoria])
-  marca          Marca    @relation(fields: [id_marca], references: [id_marca])
-  ventaDetalles  VentaDetalle[]
+  stock            Int
+  imagen           String
+  activo           Boolean
+  id_modelo        Int
+  id_categoria     Int
+  id_marca         Int
+  modelo           Modelo    @relation(fields: [id_modelo], references: [id_modelo])
+  categoria        Categoria @relation(fields: [id_categoria], references: [id_categoria])
+  marca            Marca     @relation(fields: [id_marca], references: [id_marca])
+  ventaDetalles    VentaDetalle[]
+
+  @@map("Producto")
 }
 
 model Marca {
-  id_marca     Int      @id @default(autoincrement())
-  nombre       String
-  productos    Producto[]
+  id_marca  Int        @id @default(autoincrement())
+  nombre    String
+  productos Producto[]
+
+  @@map("Marca")
 }
 
 model Modelo {
-  id_modelo    Int      @id @default(autoincrement())
-  descripcion  String
-  productos    Producto[]
+  id_modelo   Int       @id @default(autoincrement())
+  descripcion String
+  productos   Producto[]
+
+  @@map("Modelo")
 }
 
 model Categoria {
-  id_categoria Int      @id @default(autoincrement())
+  id_categoria Int       @id @default(autoincrement())
   nombre       String
   productos    Producto[]
+
+  @@map("Categoria")
 }

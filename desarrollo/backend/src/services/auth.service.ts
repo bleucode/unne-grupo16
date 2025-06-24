@@ -26,13 +26,13 @@ export const authService = {
   // Verificamos si el usuario existe y si la contraseña es correcta
   iniciar_sesion: async (email: string, password: string) => {
     const user = await userService.getUserByEmail(email);
-    if (!user) throw new Error('Email no encontrado');
+    if (!user) throw new Error('El nombre de usuario y/o contraseña es incorrecto. Por favor intenta de nuevo.');
 
     // Verificamos si la contraseña es correcta, comparando la contraseña hasheada
     // almacenada en la base de datos con la contraseña proporcionada
     const passwordMatch = await bcrypt.compare(password, user.password); 
     
-    if (!passwordMatch) throw new Error('Contraseña incorrecta');
+    if (!passwordMatch) throw new Error('El nombre de usuario y/o contraseña es incorrecto. Por favor intenta de nuevo.');
 
     const token = jwt.sign(
       {
