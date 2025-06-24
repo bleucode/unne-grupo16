@@ -105,3 +105,121 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+-- ====================================
+-- Procedimiento: crear compra
+-- ====================================
+
+DELIMITER $$
+
+CREATE PROCEDURE sp_crear_venta (
+  IN p_cliente_id INT,
+  IN p_id_metodo_pago INT,
+  IN p_cuota_id INT,
+  IN p_direccion_envio_id INT,
+  IN p_items_json JSON
+)
+BEGIN
+  DECLARE done INT DEFAULT FALSE;
+  DECLARE v_total_venta FLOAT DEFAULT 0;
+  DECLARE v_id_venta INT;
+
+  -- Cursor para recorrer los items
+  DECLARE v_producto_id INT;
+  DECLARE v_cantidad INT;
+  DECLARE v_precio_descuento FLOAT;
+  DECLARE v_stock INT;
+  DECLARE v_nombre_producto VARCHAR(255);
+
+  DECLARE item_cursor CURSOR FOR
+    SELECT 
+      JSON_EXTRACT(j.value, '$.productoId') AS productoId,
+      JSON_EXTRACT(j.value, '$.cantidad') AS cantidad
+    FROM JSON_TABLE(p_items_json, '$[*]' COLUMNS (
+      value JSON PATH '$'
+    )) AS j;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+  -- Validar método de pago
+  IF NOT EXISTS (SELECT 1 FROM MetodoPago WHERE id_metodo_pago = p_id_metodo_pago) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Método de pago inválido';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM MetodoPago mp
+    JOIN CategoriaPago cp ON mp.id_categoria_pago = cp.id_categoria_pago
+    WHERE mp.id_metodo_pago = p_id_metodo_pago AND cp.nombre = 'credito'
+  ) THEN
+    IF p_cuota_id IS NULL OR NOT EXISTS (
+      SELECT 1 FROM Cuota WHERE id_cuota = p_cuota_id AND id_metodo_pago = p_id_metodo_pago
+    ) THEN
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cuota inválida para este método de pago';
+    END IF;
+  END IF;
+
+  -- Calcular total y validar stock
+  OPEN item_cursor;
+  read_loop: LOOP
+    FETCH item_cursor INTO v_producto_id, v_cantidad;
+    IF done THEN
+      LEAVE read_loop;
+    END IF;
+
+    SELECT precio_descuento, stock, nombre INTO v_precio_descuento, v_stock, v_nombre_producto
+    FROM Producto
+    WHERE id_producto = v_producto_id AND activo = TRUE;
+
+    IF v_precio_descuento IS NULL THEN
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = CONCAT('Producto ', v_producto_id, ' no disponible');
+    END IF;
+
+    IF v_stock < v_cantidad THEN
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = CONCAT('No hay stock para el producto ', v_nombre_producto);
+    END IF;
+
+    SET v_total_venta = v_total_venta + (v_precio_descuento * v_cantidad);
+  END LOOP;
+  CLOSE item_cursor;
+
+  -- Crear la venta
+  INSERT INTO Venta (fecha_venta, total_venta, id_cliente, id_metodo_pago)
+  VALUES (NOW(), v_total_venta, p_cliente_id, p_id_metodo_pago);
+  SET v_id_venta = LAST_INSERT_ID();
+
+  -- Reset cursor
+  SET done = FALSE;
+  OPEN item_cursor;
+  detalle_loop: LOOP
+    FETCH item_cursor INTO v_producto_id, v_cantidad;
+    IF done THEN
+      LEAVE detalle_loop;
+    END IF;
+
+    SELECT precio_descuento INTO v_precio_descuento
+    FROM Producto
+    WHERE id_producto = v_producto_id;
+
+    -- Descontar stock
+    UPDATE Producto
+    SET stock = stock - v_cantidad
+    WHERE id_producto = v_producto_id;
+
+    -- Insertar detalle de venta
+    INSERT INTO VentaDetalle (cantidad, precio, id_venta, id_producto)
+    VALUES (v_cantidad, v_precio_descuento, v_id_venta, v_producto_id);
+  END LOOP;
+  CLOSE item_cursor;
+
+  -- Crear registro de envío
+  INSERT INTO Envio (fecha_envio, estado_envio, id_venta)
+  VALUES (NOW(), 'Pendiente', v_id_venta);
+
+  -- Retornar ID de venta (puedes extender a retornar JSON si lo usas desde una app)
+  SELECT v_id_venta AS nueva_venta;
+
+END$$
+
+DELIMITER ;

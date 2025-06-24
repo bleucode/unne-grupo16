@@ -21,7 +21,7 @@ function Checkout({  clearCart }) {
 
       await Promise.all(cartItems.map(async (item) => {
         try {
-          const res = await axios.get(`http://localhost:4000/api/products/${item.id}`);
+          const res = await axios.get(`/api/products/${item.id}`);
           details[item.id] = res.data;
         } catch (err) {
           console.error(`Error al obtener producto ${item.id}`, err);
@@ -93,7 +93,7 @@ function Checkout({  clearCart }) {
         }
 
         try {
-        const response = await fetch('http://localhost:4000/api/user/me', {
+        const response = await fetch('/api/user/me', {
             method: 'GET',
             headers: {
             'Authorization': `Bearer ${token}`,
@@ -130,7 +130,7 @@ function Checkout({  clearCart }) {
   useEffect(() => {
     const fetchOpcionesPago = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/ventas/opcionesPago');
+        const response = await fetch('/api/ventas/opcionesPago');
         const data = await response.json();
 
         // Acceder correctamente a cada parte del objeto
@@ -200,7 +200,7 @@ function Checkout({  clearCart }) {
 
 
     try {
-      const response = await fetch('http://localhost:4000/api/ventas', {
+      const response = await fetch('/api/ventas', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

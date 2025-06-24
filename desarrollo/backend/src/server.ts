@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-
-import { router } from './routes';  // tu router principal
+import { stripeWebhook } from './controllers/venta.controller'; // ajustá ruta si es distinta
+import { router } from './routes';  
+import bodyParser from 'body-parser';
 
 dotenv.config();
 const app = express();
@@ -13,6 +14,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
+
+
+app.post(
+  '/api/ventas/stripe/webhook',
+  bodyParser.raw({ type: 'application/json' }), // necesario para verificar firma
+  stripeWebhook 
+);
 
 app.use(express.json());
 

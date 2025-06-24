@@ -20,7 +20,7 @@ productRouter.get('/:id', productController.getById);
 productRouter.post(
   '/',
   authMiddleware.verifyToken,
-  roleMiddleware.authorizeRoles('1','2'),
+  roleMiddleware.authorizeRoles('2','3'),
   productController.create
 );
 
@@ -28,7 +28,7 @@ productRouter.post(
 productRouter.put(
   '/:id',
   authMiddleware.verifyToken,
-  roleMiddleware.authorizeRoles('1','2'),
+  roleMiddleware.authorizeRoles('2','3'),
   productController.update
 );
 
@@ -36,7 +36,7 @@ productRouter.put(
 productRouter.delete(
   '/:id',
   authMiddleware.verifyToken,
-  roleMiddleware.authorizeRoles('1','2'),
+  roleMiddleware.authorizeRoles('2','3'),
   productController.delete
 );
 

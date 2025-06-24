@@ -10,7 +10,7 @@ function Ventas() {
 
   // Traer ventas del backend
   const fetchVentas = () => {
-    fetch('http://localhost:4000/api/ventas', {
+    fetch('/api/ventas', {
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -54,7 +54,7 @@ function Ventas() {
         estado_envio: selectedVenta.estado_envio || 'Pendiente',
       };
 
-      const response = await fetch(`http://localhost:4000/api/envios/${selectedVenta.id_venta}`, {
+      const response = await fetch(`/api/envios/${selectedVenta.id_venta}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

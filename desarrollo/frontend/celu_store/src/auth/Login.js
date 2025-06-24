@@ -17,7 +17,7 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    const response = await fetch('http://localhost:4000/api/auth/login', {
+    const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,12 +26,8 @@ const handleSubmit = async (e) => {
     });
 
     const data = await response.json();
-    console.log('Respuesta del login:', data.token);
     localStorage.setItem('token', data.token)
-
-    console.log(localStorage.getItem('token'));
     if (response.ok) {
-      console.log('Guardando token:', data.token);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 

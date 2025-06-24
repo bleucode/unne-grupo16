@@ -8,28 +8,28 @@ function Productos() {
   const [categorias, setCategorias] = useState([]);
 
   const fetchProductos = () => {
-    fetch('http://localhost:4000/api/products')
+    fetch('/api/products')
       .then(res => res.json())
       .then(data => setProductos(data))
       .catch(err => console.error('Error al obtener productos', err));
   };
 
   const fetchMarcas = () => {
-    fetch('http://localhost:4000/api/products/marcas')
+    fetch('/api/products/marcas')
       .then(res => res.json())
       .then(data => setMarcas(data))
       .catch(err => console.error('Error al obtener marcas', err));
   };
   
   const fetchModelos = () => {
-    fetch('http://localhost:4000/api/products/modelos')
+    fetch('/api/products/modelos')
       .then(res => res.json())
       .then(data => setModelos(data))
       .catch(err => console.error('Error al obtener modelos', err));
   };
 
   const fetchCategorias = () => {
-    fetch('http://localhost:4000/api/products/categorias')
+    fetch('/api/products/categorias')
       .then(res => res.json())
       .then(data => setCategorias(data))
       .catch(err => console.error('Error al obtener categorías', err));
@@ -109,8 +109,8 @@ function Productos() {
       };
 
       const url = addMode
-        ? 'http://localhost:4000/api/products'
-        : `http://localhost:4000/api/products/${selectedProducto.id_producto}`;
+        ? '/api/products'
+        : `/api/products/${selectedProducto.id_producto}`;
 
       const method = addMode ? 'POST' : 'PUT';
 
@@ -148,7 +148,7 @@ function Productos() {
     };
     if (!window.confirm('¿Seguro que querés eliminar este producto?')) return;
     try {
-      await fetch(`http://localhost:4000/api/products/${id}`, { method: 'DELETE', headers });
+      await fetch(`/api/products/${id}`, { method: 'DELETE', headers });
       setProductos(productos.filter(p => p.id_producto !== id));
     } catch (error) {
       console.error('Error eliminando producto', error);
