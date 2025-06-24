@@ -27,7 +27,7 @@ function Registro() {
   useEffect(() => {
     const fetchProvincias = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/ubicacion/provincias');
+        const res = await fetch('/api/ubicacion/provincias');
         const data = await res.json();
         setProvincias(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -45,7 +45,7 @@ function Registro() {
       }
 
       try {
-        const res = await fetch(`http://localhost:4000/api/ubicacion/provincias/${formData.direccion.provincia_id}/localidades`);
+        const res = await fetch(`/api/ubicacion/provincias/${formData.direccion.provincia_id}/localidades`);
         const data = await res.json();
         const localidadesData = data.localidades || data;
         setLocalidades(Array.isArray(localidadesData) ? localidadesData : []);
@@ -113,9 +113,9 @@ function Registro() {
           id_localidad: Number(formData.direccion.id_localidad)
         }
     };
-    console.log('Formulario enviado:', completeFormData); 
+
     try {
-      const response = await fetch('http://localhost:4000/api/auth/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(completeFormData),

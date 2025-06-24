@@ -18,7 +18,7 @@ function Carrito({ cartItems: initialCartItems, clearCart }) {
 
       await Promise.all(cartItems.map(async (item) => {
         try {
-          const res = await axios.get(`http://localhost:4000/api/products/${item.id}`);
+          const res = await axios.get(`/api/products/${item.id}`);
           details[item.id] = res.data;
         } catch (err) {
           console.error(`Error al obtener producto ${item.id}`, err);

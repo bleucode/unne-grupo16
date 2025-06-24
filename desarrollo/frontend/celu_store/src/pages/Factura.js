@@ -8,7 +8,7 @@ const Factura = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:4000/api/ventas/${id}`, {
+    fetch(`/api/ventas/${id}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

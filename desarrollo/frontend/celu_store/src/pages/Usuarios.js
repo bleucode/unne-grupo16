@@ -21,7 +21,7 @@ function Usuarios() {
         }
 
         // Obtener los usuarios
-        const response = await fetch('http://localhost:4000/api/user/allusers', {
+        const response = await fetch('/api/user/allusers', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -33,7 +33,7 @@ function Usuarios() {
 
         // Ahora, para cada usuario, también buscamos la dirección por su id
         const transformedUsers = await Promise.all(data.map(async (user) => {
-          const addressResponse = await fetch(`http://localhost:4000/api/user/address/${user.id_direccion}`, {
+          const addressResponse = await fetch(`/api/user/address/${user.id_direccion}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -85,7 +85,7 @@ function Usuarios() {
         return;
       }
 
-      const response = await fetch(`http://localhost:4000/api/user/${userToDelete.id}`, {
+      const response = await fetch(`/api/user/${userToDelete.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -136,7 +136,7 @@ function Usuarios() {
         return;
       }
   
-      const response = await fetch(`http://localhost:4000/api/user/${selectedUser.id}`, {
+      const response = await fetch(`/api/user/${selectedUser.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
