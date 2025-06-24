@@ -1,0 +1,48 @@
+{
+  "info": {
+    "name": "Ubicación - Provincias y Localidades",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección para probar los endpoints de provincias y localidades"
+  },
+  "item": [
+    {
+      "name": "Listar Provincias",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/ubicacion/provincias",
+          "host": ["{{baseUrl}}"],
+          "path": ["ubicacion", "provincias"]
+        }
+      }
+    },
+    {
+      "name": "Listar Localidades por Provincia",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/ubicacion/provincias/:id/localidades",
+          "host": ["{{baseUrl}}"],
+          "path": ["ubicacion", "provincias", ":id", "localidades"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1",
+              "description": "ID de la provincia (ej. 1 para Corrientes)"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string",
+      "description": "URL base de tu API"
+    }
+  ]
+}

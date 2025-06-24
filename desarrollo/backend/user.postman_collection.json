@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "2664ca91-b5e6-49d4-86a3-685cc88aafb7",
-		"name": "Ecommerce Backend - Usuarios Copy",
+		"_postman_id": "be7d2b14-0106-4350-9682-a0c500954d32",
+		"name": "Ecommerce Backend - Usuarios Copy 2",
 		"description": "Colección para probar login, register y CRUD de usuarios en el backend",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "44473918"
@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"nombre\": \"julian\",\n  \"apellido\": \"mierez\",\n  \"dni\": \"42550222\",\n  \"email\": \"josuuue@example.com\",\n  \"nro_celular\": \"1234567890\",\n  \"id_direccion\": 1,\n  \"id_rol\": 1, \n  \"password\": \"123456\",\n  \"fecha_registro\": \"2025-04-27T00:00:00Z\",\n  \"estado\": true\n}\n",
+					"raw": "{\n  \"nombre\": \"julian\",\n  \"apellido\": \"mierez\",\n  \"dni\": \"4255022232\",\n  \"email\": \"josssf@example.com\",\n  \"nro_celular\": \"12345f6f3e37890\",\n  \"direccion\": {\n    \"calle\": \"Av. Siempre Viva\",\n    \"nro_calle\": \"742\",\n    \"cod_postal\": \"12345\",\n     \"id_localidad\": 1\n  },\n  \"id_rol\": 2,\n  \"password\": \"123456\",\n  \"fecha_registro\": \"2025-04-27T00:00:00Z\",\n  \"activo\": true\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -44,7 +44,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"email\": \"jose@example.com\",\n  \"password\": \"123456\"\n}",
+					"raw": "{\n  \"email\": \"jo@example.com\",\n  \"password\": \"123456\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -75,7 +75,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo2LCJlbWFpbCI6Imp1bGlhbkBleGFtcGxlLmNvbSIsIm5vbWJyZSI6Imp1bGlhbiIsImlkX3JvbCI6MSwiaWF0IjoxNzQ1Nzg2MTk0LCJleHAiOjE3NDYzOTA5OTR9.TO1ePd1F0pgwb78jJdDIaJXYlapx62wdZ1A05B89nEY",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoianVsaWFuIiwiaWRfcm9sIjoxLCJpYXQiOjE3NTAwMjkwMTMsImV4cCI6MTc1MDYzMzgxM30.jMR2u-S12ItZZzXGXcW5vpLFHyX6-odH_7VCRbh8w4Y",
 							"type": "string"
 						}
 					]
@@ -107,6 +107,16 @@
 		{
 			"name": "User - Get By ID",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoiSnVhbiBDYXJsb3MiLCJpZF9yb2wiOjEsImlhdCI6MTc1MDAzMDQ4NCwiZXhwIjoxNzUwNjM1Mjg0fQ.F7O492DRGRRemoDHhrwoIwR4gY7FO4IRfDtY5ifFQ08",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -128,11 +138,21 @@
 		{
 			"name": "User - Update",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoiSnVhbiBDYXJsb3MiLCJpZF9yb2wiOjEsImlhdCI6MTc1MDAyOTUxNCwiZXhwIjoxNzUwNjM0MzE0fQ.eLFqEaFzs-3D6F-h7LY49EZ4nGsNNDchLd0cFdkbE68",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"nombre\": \"Juan Carlos\",\n  \"apellido\": \"Pérez Gomez\"\n}",
+					"raw": "{\n  \"nombre\": \"jjj Carlos\",\n  \"apellido\": \"Pérez Gomez\",\n  \"id_rol\":1,\n  \"activo\":1\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -158,6 +178,16 @@
 		{
 			"name": "User - Delete",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJlbWFpbCI6ImpvQGV4YW1wbGUuY29tIiwibm9tYnJlIjoiSnVhbiBDYXJsb3MiLCJpZF9yb2wiOjEsImlhdCI6MTc1MDAzMDQ4NCwiZXhwIjoxNzUwNjM1Mjg0fQ.F7O492DRGRRemoDHhrwoIwR4gY7FO4IRfDtY5ifFQ08",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {

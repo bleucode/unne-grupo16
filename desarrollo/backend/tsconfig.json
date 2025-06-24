@@ -1,12 +1,18 @@
 {
-    "compilerOptions": {
-      "target": "ES2020",
-      "module": "commonjs",
-      "rootDir": "./src",
-      "outDir": "./dist",
-      "esModuleInterop": true,
-      "strict": true,
-      "skipLibCheck": true
-    }
-  }
-  
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "rootDir": ".",         // ahora incluye toda la raíz del proyecto
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "prisma/seed.ts"        // agregamos explícitamente el seed
+  ],
+  "exclude": ["node_modules", "dist"]
+}

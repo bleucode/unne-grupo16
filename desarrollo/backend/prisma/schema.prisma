@@ -7,18 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Provincia {
+  id_provincia Int        @id @default(autoincrement())
+  nombre       String     @unique
+  localidades  Localidad[]
+}
+
+
 model Localidad {
   id_localidad Int      @id @default(autoincrement())
   nombre       String
   id_provincia Int
   provincia    Provincia @relation(fields: [id_provincia], references: [id_provincia])
-  Direcciones  Direccion[]
-}
-
-model Provincia {
-  id_provincia Int        @id @default(autoincrement())
-  nombre       String
-  localidades  Localidad[]
+  direcciones  Direccion[]
+  @@unique([nombre, id_provincia], name: "localidad_unique")
 }
 
 model Direccion {
@@ -29,29 +31,17 @@ model Direccion {
   id_localidad Int
   localidad    Localidad @relation(fields: [id_localidad], references: [id_localidad])
   usuarios     Usuario[]
-  envios       Envio[]
-  retiros      Retiro[]
-}
-
-model Retiro {
-  id_retiro     Int       @id @default(autoincrement())
-  fecha_retiro  DateTime
-  estado_retiro String
-  id_venta      Int
-  id_direccion  Int
-  venta         Venta     @relation(fields: [id_venta], references: [id_venta])
-  direccion     Direccion @relation(fields: [id_direccion], references: [id_direccion])
 }
 
 model Envio {
-  id_envio       Int       @id @default(autoincrement())
+  id_envio       Int      @id @default(autoincrement())
   fecha_envio    DateTime
   estado_envio   String
-  cod_seguimiento String
-  id_venta       Int
-  id_direccion   Int
-  venta          Venta     @relation(fields: [id_venta], references: [id_venta])
-  direccion      Direccion @relation(fields: [id_direccion], references: [id_direccion])
+  cod_seguimiento String? //es opcional porque el codigo de envio se puede otorga mas adelante cuando se deposita en el correo
+
+  // FK y PK opcionalmente
+  id_venta       Int      @unique
+  venta          Venta    @relation("VentaEnvio", fields: [id_venta], references: [id_venta])
 }
 
 model VentaDetalle {
@@ -64,30 +54,64 @@ model VentaDetalle {
   producto         Producto  @relation(fields: [id_producto], references: [id_producto])
 }
 
+//model TipoPago{
+ // id_tipo_pago  Int             @id @default(autoincrement())
+ // metodo        String
+ // descripcion   String
+  //ventas       Venta[]
+//}
+
+model CategoriaPago {
+  id_categoria_pago   Int             @id @default(autoincrement())
+  nombre         String          // "billetera_virtual" | "debito" | "credito"
+  descripcion    String?
+  metodos        MetodoPago[]    // relación 1‑N
+}
+
+model MetodoPago {
+  id_metodo_pago      Int             @id @default(autoincrement())
+  nombre         String          // "MercadoPago", "Visa", "Maestro", etc.
+  id_categoria_pago   Int
+  categoriaPago      CategoriaPago   @relation(fields: [id_categoria_pago], references: [id_categoria_pago])
+  cuotas         Cuota[]         // sólo si categoría = crédito o débito con cuotas
+  ventas       Venta[]
+  //  para billetera virtual no habrá filas aquí
+}
+
+model Cuota {
+  id_cuota       Int             @id @default(autoincrement())
+  id_metodo_pago      Int
+  numero_cuota         Int             // 1, 3, 6, 12…
+  interes_cuota       Float?          // porcentaje de interés (0 para sin interés)
+  metodoPago     MetodoPago      @relation(fields: [id_metodo_pago], references: [id_metodo_pago])
+}
+
 model Venta {
   id_venta      Int            @id @default(autoincrement())
   fecha_venta   DateTime
   total_venta   Float
   id_cliente    Int
-  id_tipo_pago  Int
+  id_metodo_pago  Int
+         
   usuario       Usuario        @relation(fields: [id_cliente], references: [id_usuario])
+  metodoPago      MetodoPago       @relation(fields: [id_metodo_pago], references: [id_metodo_pago])
+  envio         Envio?          @relation("VentaEnvio")       // Obligatorio - toda venta tiene envío
   ventaDetalles VentaDetalle[]
-  envios        Envio[]
-  retiros       Retiro[]
 }
+
 
 model Usuario {
   id_usuario     Int       @id @default(autoincrement())
   nombre         String
   apellido       String
-  dni            String
+  dni            String    @unique
   email          String    @unique
-  nro_celular    String
+  nro_celular    String    @unique
   id_direccion   Int
   id_rol         Int
   password       String
   fecha_registro DateTime
-  estado         Boolean
+  activo         Boolean
   direccion      Direccion @relation(fields: [id_direccion], references: [id_direccion])
   rol            Rol       @relation(fields: [id_rol], references: [id_rol])
   ventas         Venta[]
@@ -105,27 +129,28 @@ model Producto {
   descripcion    String
   especificacion String
   precio         Float
+  precio_descuento Float
   stock          Int
   imagen         String
-  estado         Boolean
+  activo         Boolean
   id_modelo      Int
   id_categoria   Int
+  id_marca       Int
   modelo         Modelo    @relation(fields: [id_modelo], references: [id_modelo])
   categoria      Categoria @relation(fields: [id_categoria], references: [id_categoria])
+  marca          Marca    @relation(fields: [id_marca], references: [id_marca])
   ventaDetalles  VentaDetalle[]
 }
 
 model Marca {
-  id_marca    Int      @id @default(autoincrement())
-  descripcion String
-  modelos     Modelo[]
+  id_marca     Int      @id @default(autoincrement())
+  nombre       String
+  productos    Producto[]
 }
 
 model Modelo {
   id_modelo    Int      @id @default(autoincrement())
   descripcion  String
-  id_marca     Int
-  marca        Marca    @relation(fields: [id_marca], references: [id_marca])
   productos    Producto[]
 }
 

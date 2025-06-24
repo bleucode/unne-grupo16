@@ -8,45 +8,52 @@ function Login() {
   const [error, setError] = useState('');  // Estado para manejar el error
 
   // Función para manejar el envío del formulario
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    if (!email || !password) {
-      setError('Por favor ingrese tanto el correo electrónico como la contraseña');
-      return;
-    }
-  
-    try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        localStorage.setItem('token', data.token); 
-        console.log('Usuario autenticado:', data.user);
-  
-        // Redireccionar según el rol
-        if (data.user.id_rol === 1) {
-          window.location.href = '/';        // Usuario normal
-        } else if (data.user.id_rol === 2) {
-          window.location.href = '/admin';    // Admin
-        } else {
-          window.location.href = '/';         // En caso de rol desconocido, lo mando a inicio
-        }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!email || !password) {
+    setError('Por favor ingrese tanto el correo electrónico como la contraseña');
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:4000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+    console.log('Respuesta del login:', data.token);
+    localStorage.setItem('token', data.token)
+
+    console.log(localStorage.getItem('token'));
+    if (response.ok) {
+      console.log('Guardando token:', data.token);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      if (data.user.id_rol === 1) {
+        window.location.href = '/';
+      } else if (data.user.id_rol === 3) { // administrador
+        window.location.href = '/admin?section=usuarios';
+      } else if (data.user.id_rol === 2) { // vendedor
+        window.location.href = '/admin?section=ventas';
       } else {
-        setError(data.error);
+        window.location.href = '/';
       }
-    } catch (error) {
-      console.error('Error en el login:', error);
-      setError('Ocurrió un error al intentar iniciar sesión.');
+    } else {
+      setError(data.error);
     }
-  };
+
+  } catch (error) {
+    console.error('Error en el login:', error);
+    setError('Ocurrió un error al intentar iniciar sesión.');
+  }
+};
+
   
 
   return (

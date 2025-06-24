@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom'; // <--- importamos
 import Sidebar from './Sidebar';
 import Usuarios from '../pages/Usuarios';
 import Productos from '../pages/Productos';
@@ -6,7 +7,11 @@ import Ventas from '../pages/Ventas';
 import './AdminPanel.css';
 
 function AdminPanel() {
-  const [selectedSection, setSelectedSection] = useState('usuarios');
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialSection = queryParams.get('section') || 'usuarios';
+
+  const [selectedSection, setSelectedSection] = useState(initialSection);
   const [sidebarVisible, setSidebarVisible] = useState(true);
 
   const toggleSidebar = () => {

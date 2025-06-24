@@ -50,7 +50,16 @@ function Usuarios() {
             dni: user.dni,
             nro_celular: user.nro_celular,
             direccion: addressData || {}, // Traemos los datos completos de la dirección
-            rol: user.id_rol === 1 ? 'usuario' : 'administrador',
+            rol: {
+              id: user.id_rol,
+              nombre: 
+                user.id_rol === 1 ? 'cliente' :
+                user.id_rol === 2 ? 'vendedor' :
+                user.id_rol === 3 ? 'administrador' :
+                'rol desconocido',
+            }
+
+
           };
         }));
 
@@ -86,7 +95,6 @@ function Usuarios() {
 
       if (response.ok) {
         setUsers(users.filter(user => user.id !== userToDelete.id));
-        console.log('Usuario eliminado');
       } else {
         console.error('Error al eliminar el usuario:', response.statusText);
       }
@@ -140,7 +148,7 @@ function Usuarios() {
           email: selectedUser.email,
           dni: selectedUser.dni,
           nro_celular: selectedUser.nro_celular,
-          id_rol: selectedUser.rol === 'usuario' ? 1 : 2,
+          id_rol: selectedUser.rol.id,
           direccion: {
             id_direccion: selectedUser.direccion?.id_direccion,
             calle: selectedUser.direccion?.calle,
@@ -159,7 +167,6 @@ function Usuarios() {
         setSelectedUser(null);
         setEditMode(false);
         alert(responseData.message || "Usuario actualizado con éxito");
-        console.log('Usuario actualizado');
       } else {
         console.error('Error al actualizar el usuario:', response.statusText);
         alert(responseData.message || "Hubo un error al actualizar el usuario");
@@ -206,7 +213,7 @@ function Usuarios() {
               <td>{user.nombre}</td>
               <td>{user.apellido}</td>
               <td>{user.email}</td>
-              <td>{user.rol}</td>
+              <td>{user.rol.nombre}</td>
               <td>
                 <button onClick={() => handleView(user)}>Ver</button>
                 <button onClick={() => handleEdit(user)}>Modificar</button>
@@ -278,11 +285,24 @@ function Usuarios() {
               />
               <label>Rol:</label>
               <select
-                value={selectedUser.rol}
-                onChange={(e) => setSelectedUser({ ...selectedUser, rol: e.target.value })}
+                value={selectedUser.rol.nombre}
+                onChange={(e) =>
+                  setSelectedUser({
+                    ...selectedUser,
+                    rol: {
+                      ...selectedUser.rol,
+                      nombre: e.target.value,
+                      id: e.target.value === 'cliente' ? 1 :
+                          e.target.value === 'vendedor' ? 2 :
+                          e.target.value === 'administrador' ? 3 :
+                          null,  // o algún valor por defecto o manejo de error
+                    },
+                  })
+                }
                 disabled={!editMode}
               >
-                <option value="usuario">Usuario</option>
+                <option value="cliente">Cliente</option>
+                <option value="vendedor">Vendedor</option>
                 <option value="administrador">Administrador</option>
               </select>
               <label>Calle:</label>
